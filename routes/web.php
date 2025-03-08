@@ -118,9 +118,9 @@ use App\Http\Controllers\Customer\CustomerAuthController;
             Route::prefix('product')->group(function(){
                 Route::get('/', [EcomController::class, 'index'])->name('product.index');
                 Route::get('/form', [EcomController::class, 'form'])->name('product.form');
-                Route::get('/form/{id}', [EcomController::class, 'form'])->name('product.update');
-                Route::post('/save', [EcomController::class, 'save'])->name('product.save');
-                Route::post('/save/{id}', [EcomController::class, 'save'])->name('product.xyz');
+                Route::get('/form/{id?}', [EcomController::class, 'form'])->name('product.update');
+                Route::post('/save/{id?}', [EcomController::class, 'save'])->name('product.save');
+                // Route::post('/save/{id}', [EcomController::class, 'save'])->name('product.xyz');
                 Route::post('/upload-images', [EcomController::class, 'uploadImages'])->name('product.upload.images');
 
                 Route::get('/delete/{id}', [EcomController::class, 'delete'])->name('product.delete');

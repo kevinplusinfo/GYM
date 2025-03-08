@@ -46,7 +46,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <form action="{{ route('product.save', $product->id ?? null) }}" method="POST" enctype="multipart/form-data" id="form">
+        <form action="{{ route('product.save', ['id' => $product->id ?? null]) }}" method="POST" enctype="multipart/form-data" id="form">
             @csrf
             <div class="row">
                 <div class="col-md-6">
@@ -92,6 +92,12 @@
                                 
                                     <label class="mt-4"> Images</label>
                                     <input type="file" id="additionalImages" name="images[]" class="form-control" multiple>
+                                    
+                                    @if(isset($product->images) )
+                                        @foreach ($product->images as $index => $images)
+                                            <img src="{{ Storage::url($images->image) }}"  class="img-fluid mt-2" style="max-width: 200px;">
+                                        @endforeach
+                                    @endif
                                     <div id="additionalImagePreview"></div>
                                 </div>
                             </div>
@@ -107,9 +113,8 @@
                                     <button type="button" id="addflavore" name="addflavore" class="btn btn-primary btn-sm">Add Flavor</button>
                                 </div>
                                 <div id="size" class="element-container"></div>
-                                {{-- {{dd($product->flavorSizes)}} --}}
                                 @if(isset($product))
-                                @foreach ($product->flavorSizes as $key => $flavorSize)
+                                @foreach ($product->productFlavors as $key => $productFlavor)
                                     <div id="flavor-container-{{ $key }}" class="flavor-item">
                                         <div class="row mt-2">
                                             <div class="col-8 mt-3">
@@ -118,7 +123,7 @@
                                                     <option value="">Select Flavor</option>
                                                     @foreach ($flavors as $f)
                                                         <option value="{{ $f->id }}" 
-                                                            {{ $f->id == optional($flavorSize->productFlavor)->flavor_id ? 'selected' : '' }}>
+                                                            {{ $f->id == optional($productFlavor->flavor)->id ? 'selected' : '' }}>
                                                             {{ $f->name }}
                                                         </option>
                                                     @endforeach
@@ -132,8 +137,8 @@
                                         <div class="detail-container mt-3 float-right" id="detail-container-{{ $key }}">
                                             <button type="button" class="btn btn-primary btn-sm add-detail" data-id="{{ $key }}">Add Detail</button>
                                             <div class="details-group" id="details-group-{{ $key }}">
-                                                @if(!empty($flavorSize->sizes))
-                                                    @foreach ($flavorSize->sizes as $index => $size)
+                                                @if(!empty($productFlavor->sizes))
+                                                    @foreach ($productFlavor->sizes as $index => $size)
                                                         <div class="row mt-2 detail-item" id="detail-{{ $key }}-{{ $index }}">
                                                             <div class="col-3">
                                                                 <label>Weight</label>
@@ -165,7 +170,6 @@
                                 @endforeach
                             @endif
                             
-
                             </div>
                         </div>
                     </div>
