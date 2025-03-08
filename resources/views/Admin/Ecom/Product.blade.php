@@ -18,9 +18,7 @@
     .daterangepicker .calendar th, .daterangepicker .calendar td {
         font-family: monospace !important;
     }
-    .cursor-pointer {
-        cursor: pointer;
-    }
+   
 </style>
 @endsection
 
