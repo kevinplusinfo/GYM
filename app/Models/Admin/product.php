@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models\Admin;
+
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin\{
+    Flavor
+};
+
+class product extends Model
+{
+    protected $fillable = ['title', 'description', 'specifiaction', 'main_image'];
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    public function flevor()
+    {
+        return $this->hasMany(Flavor::class, 'product_id', 'id');    
+    }
+
+    public function flavors()
+    {
+        return $this->hasMany(ProductFlavor::class, 'product_flavor_id');
+    }
+    public function productFlavors()
+    {
+        return $this->hasMany(ProductFlavor::class, 'product_id');
+    }
+    public function flavorSizes()
+    {
+        return $this->hasManyThrough(ProductFlavorSize::class, ProductFlavor::class, 'product_id', 'product_flavor_id');
+    }
+
+}
