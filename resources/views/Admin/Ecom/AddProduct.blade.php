@@ -230,77 +230,80 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.16.4/tagify.min.js"></script>
 
 <script>
- $(document).ready(function () {
-    $('#summernote').summernote({
-        height: 200,
-        toolbar: [
-            ['style', ['bold', 'italic', 'underline', 'clear']],
-            ['font', ['strikethrough', 'superscript', 'subscript']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['insert', ['link', 'picture', 'video']],
-            ['view', ['fullscreen', 'codeview', 'help']]
-        ]
-    });
+    $(document).ready(function () {
+        $('#summernote').summernote({
+            height: 200, 
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        });
 
-    $("#form").validate({
-        rules: {
-            title: { required: true },
-            mainimg: { required: true },
-            description: { required: true },
-        },
-        messages: {
-            title: { required: "This field is required" },
-            mainimg: { required: "Please upload an image" },
-            description: { required: "This field is required" }
-        },
-        errorPlacement: function (error, element) {
-            element.closest('.form-control').after(error);
-        }
-    });
+        $("#form").validate({
+            rules: {
+                title: { required: true },
+                mainimg: { required: true },
+                description: { required: true },
+            },
+            messages: {
+                title: { required: "This field is required" },
+                mainimg: { required: "Please upload an image" },
+                description: { required: "This field is required" }
+            },
+            errorPlacement: function (error, element) {
+                element.closest('.form-control').after(error);
+            }
+        });
 
-    // Initialize indices based on existing data
-    let flewer_index = {{ isset($product) ? count($product->productFlavors) : 0 }};
-    let detailIndex = {{ isset($product) ? max(array_map(function($flavor) { return count($flavor['sizes']); }, $product->productFlavors->toArray())) : 0 }};
+        let i = 1; 
+        let j = 1; 
+        let flewer_index = 0;
+        var flavors = "";
 
-    $(document).on('click', '#addflavore', function() {
-        let flavorHTML = `
-            <div id="flavor-container-${flewer_index}" class="flavor-item">
-                <div class="card" style="box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 0, 0, 0.1);">
-                    <div class="card-body">
-                        <label for="flavore">Flavor</label>
-                        <div class="row mt-2">
-                            <div class="input-group col-9 mb-1">
-                                <select class="flavore form-control flavor-select" name="flavore[${flewer_index}]" required>
-                                    <option value="">Select Flavor</option>
-                                    @foreach ($flavors as $f)
-                                        <option value="{{ $f->id }}">{{ $f->name }}</option>
-                                    @endforeach
-                                </select>
-                                <button type="button" class="btn btn-danger btn-sm remove-flavor" data-id="${flewer_index}">Remove</button>
+        $(document).on('click', '#addflavore', function() {     
+            let flavorHTML = `
+                <div id="flavor-container-${i}" class="flavor-item">
+                    <div class="card" style="box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 0, 0, 0.1);">
+                        <div class="card-body">
+                            <label for="flavore">Flavor</label>
+                            <div class="row mt-2">
+                                <div class="input-group col-9 mb-1">
+                                    <select class="flavore form-control flavor-select" name="flavore[`+flewer_index+`]" required>
+                                        <option value="">Select Flavor</option>
+                                        <?php foreach ($flavors as $f): ?>
+                                            <option value="<?= $f->id ?>"><?= $f->name ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                
+                                    <button type="button" class="btn btn-danger btn-sm remove-flavor " data-id="${i}">Remove</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="detail-container mt-3 float-right" id="detail-container-${flewer_index}" style="display: none;">
-                            <button type="button" class="btn btn-primary btn-sm add-detail" data-id="${flewer_index}" data-flewer-index="${flewer_index}">Add Detail</button>
-                            <div class="details-group" id="details-group-${flewer_index}"></div>
+                            <div class="detail-container mt-3 float-right" id="detail-container-${i}" style="display: none;">
+                                <button type="button" class="btn btn-primary btn-sm add-detail" data-id="${i}" data-flewer-index="${flewer_index}">Add Detail</button>
+                                <div class="details-group" id="details-group-${i}"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
-        $(".element-container").append(flavorHTML);
-        flewer_index++;
-    });
+            `;
+            $(".element-container").append(flavorHTML);
+            flewer_index++;
+            i++;     
+        });
 
-    $(document).on("change", ".flavor-select", function () {
-        let parentId = $(this).closest(".flavor-item").attr("id");
-        $("#" + parentId + " .detail-container").show();
-    });
+        $(document).on("change", ".flavor-select", function () {
+            let parentId = $(this).closest(".flavor-item").attr("id");
+            $("#" + parentId + " .detail-container").show();
+        });
 
-    $(document).on("click", ".add-detail", function () {
-        let id = $(this).data("id");
-        let current_element_flewer_index = $(this).data('flewer-index');
-        let detailHTML = `
-            <div class="row mt-2 detail-item" id="detail-${id}-${detailIndex}">
+        $(document).on("click", ".add-detail", function () {
+            let id = $(this).data("id");
+            let current_element_flewer_index = $(this).data('flewer-index');
+            let detailHTML = `
+               <div class="row mt-2 detail-item" id="detail-${id}-${j}">
                 <div class="col-4">
                     <label>Weight</label>
                     <input type="text" name="weight[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Weight" required>
@@ -314,29 +317,32 @@
                     </div>
                 </div>
                 <div class="input-group col-7 mb-1">
-                    <label>QTY</label>
-                    <input type="number" name="qty[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Qty" required>
-                    <button type="button" class="btn btn-danger btn-sm remove-detail ml-4" data-id="${id}" data-detail="${detailIndex}">Remove</button>
+                        <label>QTY</label>
+                        <input type="number" name="qty[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Qty" required>
+                
+                        <button type="button" class="btn btn-danger btn-sm remove-detail ml-4" data-id="${id}" data-detail="${j}">Remove</button>
                 </div>
                 <hr>
             </div>
-        `;
-        $("#details-group-" + id).append(detailHTML);
-        detailIndex++;
-    });
 
-    $(document).on("click", ".remove-flavor", function () {
-        let id = $(this).data("id");
-        $("#flavor-container-" + id).remove();
-    });
 
-    $(document).on("click", ".remove-detail", function () {
-        let id = $(this).data("id");
-        let detailId = $(this).data("detail");
-        $("#detail-" + id + "-" + detailId).remove();
-    });
+            `;
+            $("#details-group-" + id).append(detailHTML);
+            j++;
+        });
 
-    $('#mainImage').change(function () {
+        $(document).on("click", ".remove-flavor", function () {
+            let id = $(this).data("id");
+            $("#flavor-container-" + id).remove();
+        });
+
+        $(document).on("click", ".remove-detail", function () {
+            let id = $(this).data("id");
+            let detailId = $(this).data("detail");
+            $("#detail-" + id + "-" + detailId).remove();
+        });
+
+        $('#mainImage').change(function () {
         uploadImages($(this)[0].files, 'main');
     });
 
@@ -382,18 +388,18 @@
             }
         });
     }
-
+     
     $(document).on('click', '.delete-icon', function () {
-        const imageId = $(this).data('image-id');
-        const imageType = $(this).data('image-type');
-        const imageContainer = $(this).closest('.image-container');
+        const imageId = $(this).data('image-id'); 
+        const imageType = $(this).data('image-type'); 
+        const imageContainer = $(this).closest('.image-container'); 
 
         if (confirm('Are you sure you want to delete this image?')) {
             $.ajax({
-                url: '{{ route("delete.image") }}',
+                url: '{{ route("delete.image") }}', 
                 type: 'POST',
                 data: {
-                    _token: '{{ csrf_token() }}',
+                    _token: '{{ csrf_token() }}', 
                     image_id: imageId,
                     image_type: imageType
                 },
@@ -410,9 +416,11 @@
             });
         }
     });
+        
 
-    $(".sidebar .nav-link").removeClass('active');
-    $(".ecom-link").addClass('active');
+
+        $(".sidebar .nav-link").removeClass('active');
+        $(".ecom-link").addClass('active');
 });
 </script>
 @endsection
