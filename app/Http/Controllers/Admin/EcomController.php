@@ -55,89 +55,62 @@ class EcomController extends Controller
     }
 
     
-    public function save(Request $request, $id = null)
-    {
-        // dd($request->all());
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'specification' => 'required|string',
-            'mainimg' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'flavore' => 'required|array',
-            'flavore.*' => 'integer|exists:flavors,id',
-            'weight' => 'required|array',
-            'price' => 'required|array',
-            'qty' => 'required|array',
-            'strike_price' => 'nullable|array'
-        ]);
-    
-        $product = $id ? Product::find($id) : new Product();
-    
-        if ($id && !$product) {
-            return redirect()->back()->with('error', 'Product not found.');
-        }
-    
-        $product->title = $request->title;
-        $product->description = $request->description;
-        $product->specification = $request->specification;
-    
-        if ($request->hasFile('mainimg')) {
-            if ($product->main_image && Storage::exists('public/' . $product->main_image)) {
-                Storage::delete('public/' . $product->main_image);
-            }
-            $product->main_image = $request->file('mainimg')->store('products', 'public');
-        }
-    
-        $product->save();
-    
-        if ($request->hasFile('images')) {
-            if ($id) {
-                ProductImage::where('product_id', $id)->delete();
-            }
-            foreach ($request->file('images') as $file) {
-                $productImage = new ProductImage();
-                $productImage->product_id = $product->id;
-                $productImage->image = $file->store('product_images', 'public');
-                $productImage->save();
-            }
-        }
-    
-        $newFlavors = $request->input('flavore', []);
-    
-        ProductFlavor::where('product_id', $product->id)
-            ->whereNotIn('flavor_id', $newFlavors)
-            ->delete();
-    
-        foreach ($newFlavors as $flavorIndex => $flavor_id) {
-            $productFlavor = ProductFlavor::firstOrCreate([
-                'product_id' => $product->id,
-                'flavor_id' => $flavor_id
-            ]);
-    
-            $newWeights = $request->weight[$flavorIndex] ?? [];
-    
-            ProductFlavorSize::where('product_flavor_id', $productFlavor->id)
-                ->whereNotIn('weight', $newWeights)
-                ->delete();
-    
-            foreach ($newWeights as $key => $weight) {
-                ProductFlavorSize::updateOrCreate(
-                    [
-                        'product_flavor_id' => $productFlavor->id,
-                        'weight' => $weight
-                    ],
-                    [
-                        'price' => $request->price[$flavorIndex][$key],
-                        'qty' => $request->qty[$flavorIndex][$key],
-                        'strike_price' => $request->strike_price[$flavorIndex][$key] ?? null
-                    ]
-                );
-            }
-        }
-    
-        return redirect()->route('product.index')->with('success', 'Product saved successfully.');
+    public function save(Request $request)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'specification' => 'required|string',
+        'mainimg' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        'flavore' => 'required|array',
+        'flavore.*' => 'integer|exists:flavors,id',
+        'weight' => 'required|array',
+        'price' => 'required|array',
+        'qty' => 'required|array',
+        'strike_price' => 'nullable|array'
+    ]);
+
+    $product = new Product();
+    $product->title = $request->title;
+    $product->description = $request->description;
+    $product->specification = $request->specification;
+
+    if ($request->hasFile('mainimg')) {
+        $product->main_image = $request->file('mainimg')->store('products', 'public');
     }
+
+    $product->save();
+
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $file) {
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image' => $file->store('product_images', 'public')
+            ]);
+        }
+    }
+
+    foreach ($request->flavore as $flavorIndex => $flavor_id) {
+        $productFlavor = ProductFlavor::create([
+            'product_id' => $product->id,
+            'flavor_id' => $flavor_id
+        ]);
+
+        foreach ($request->weight[$flavorIndex] as $key => $weight) {
+            ProductFlavorSize::create([
+                'product_flavor_id' => $productFlavor->id,
+                'weight' => $weight,
+                'price' => $request->price[$flavorIndex][$key],
+                'qty' => $request->qty[$flavorIndex][$key],
+                'strike_price' => $request->strike_price[$flavorIndex][$key] ?? null
+            ]);
+        }
+    }
+
+    return redirect()->route('product.index')->with('success', 'Product saved successfully.');
+}
+
     
 
     public function delete($id)
