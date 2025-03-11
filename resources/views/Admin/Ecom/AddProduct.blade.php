@@ -19,6 +19,18 @@
     .cursor-pointer {
         cursor: pointer;
     }
+    .delete-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    background: red;
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+    font-size: 16px;
+    line-height: 1;
+}
 </style>
 @endsection
 
@@ -66,9 +78,85 @@
                                         {{  $product->description ?? ''}}
                                     </textarea>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="title">Specification</label>
-                                    <input type="text" name="specification" id="title" class="form-control"  placeholder="Enter Specification" required value="{{ $product->specification ?? '' }}">
+                               
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <div class="card-header" style="background-color: rgb(200, 200, 221)">
+                            <h3 class="card-title">Pricing & Stock & Flavore</h3>
+                        </div>
+                        <div class="card" style="box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 0, 0, 0.1);">
+                            <div class="card-body">
+                                <div class="card-header text-right mb-3" style="background-color: #e0e4e6">
+                                    <button type="button" id="addflavore" name="addflavore" class="btn btn-primary btn-sm">Add Flavor</button>
+                                </div>
+                                @if(isset($product))
+                                    @php $flavorIndex = 0; @endphp
+                                    @foreach ($product->productFlavors as $key => $productFlavor)
+                                        <div id="flavor-container-{{ $flavorIndex }}" class="flavor-item">
+                                            <div class="card" style="box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 0, 0, 0.1);">
+                                                <div class="card-body">
+                                                    <div class="row mt-2">
+                                                        <div class="col-11 mt-3">
+                                                            <label for="flavore">Flavor</label>
+                                                            <div class="input-group col-9 mb-1">
+                                                                <select class="flavore form-control flavor-select" name="flavore[{{ $flavorIndex }}]" required>
+                                                                    <option value="">Select Flavor</option>
+                                                                    @foreach ($flavors as $f)
+                                                                        <option value="{{ $f->id }}" {{ $f->id == optional($productFlavor->flavor)->id ? 'selected' : '' }}>
+                                                                            {{ $f->name }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                        
+                                                                <button type="button" class="btn btn-danger btn-sm remove-flavor" data-id="{{ $flavorIndex }}">Remove</button>
+                                                             </div>
+                                                        </div>
+                                                    </div>
+                                        
+                                                    <div class="detail-container mt-3 float-right" id="detail-container-{{ $flavorIndex }}">
+                                                        <button type="button" class="btn btn-primary btn-sm add-detail" data-id="{{ $flavorIndex }}" data-flewer-index="{{ $flavorIndex }}">Add Detail</button>
+                                                        <div class="details-group" id="details-group-{{ $flavorIndex }}">
+                                                            @if(!empty($productFlavor->sizes))
+                                                                @php $detailIndex = 0; @endphp
+                                                                @foreach ($productFlavor->sizes as $index => $size)
+                                                                    <div class="row mt-2 detail-item" id="detail-{{ $flavorIndex }}-{{ $detailIndex }}">
+                                                                        <div class="col-3">
+                                                                            <label>Weight</label>
+                                                                            <input type="text" name="weight[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->weight }}" required>
+                                                                        </div>
+                                                                        
+                                                                       
+                                                                        <div class="col-8">
+                                                                            <label>Prices</label>
+                                                                            <div class="input-group mb-3">
+                                                                                <input type="number" name="price[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->price }}" required>
+                                                                                <span class="input-group-text">(₹)</span>
+                                                                                <input type="number" name="strike_price[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->strike_price }}" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="input-group col-7 mb-1">
+                                                                            <label>Qty</label>
+                                                                            <input type="number" name="qty[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->qty }}" required>
+                                                                       
+                                                                            <button type="button" class="btn btn-danger btn-sm remove-detail ml-5" data-id="{{ $flavorIndex }}" data-detail="{{ $detailIndex }}">Remove</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    @php $detailIndex++; @endphp
+                                                                @endforeach
+                                                            @else
+                                                                <p>No sizes available.</p>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @php $flavorIndex++; @endphp
+                                    @endforeach
+                                @endif
+                                <div id="size" class="element-container">
                                 </div>
                             </div>
                         </div>
@@ -84,92 +172,41 @@
                                 <div class="mb-3">
                                     <label>Main Image</label>
                                     <input type="file" id="mainImage" name="mainimg" class="form-control">
-                                    <div id="mainImagePreview"></div>
-                                
-                                    @if(isset($product) && $product->main_image)
-                                        <img src="{{ Storage::url($product->main_image) }}"  class="img-fluid mt-2" style="max-width: 200px;">
-                                    @endif
-                                
-                                    <label class="mt-4"> Images</label>
+                                    <div id="mainImagePreview">
+                                        @if(isset($product) && $product->main_image)
+                                            <div class="image-container" style="position: relative; display: inline-block;">
+                                                <img src="{{ Storage::url($product->main_image) }}" class="img-fluid mt-2" style="max-width: 200px;">
+                                                <span class="delete-icon" data-image-id="{{ $product->id }}" data-image-type="main" style="position: absolute; top: 0; right: 0; cursor: pointer; background: red; color: white; padding: 5px;">×</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                            
+                                    <label class="mt-4">Additional Images</label>
                                     <input type="file" id="additionalImages" name="images[]" class="form-control" multiple>
-                                    
-                                    @if(isset($product->images) )
-                                        @foreach ($product->images as $index => $images)
-                                            <img src="{{ Storage::url($images->image) }}"  class="img-fluid mt-2" style="max-width: 200px;">
-                                        @endforeach
-                                    @endif
-                                    <div id="additionalImagePreview"></div>
+                                    <div id="additionalImagePreview">
+                                        @if(isset($product->images))
+                                            @foreach ($product->images as $index => $image)
+                                                <div class="image-container" style="position: relative; display: inline-block;">
+                                                    <img src="{{ Storage::url($image->image) }}" class="img-fluid mt-2" style="max-width: 200px;">
+                                                    <span class="delete-icon" data-image-id="{{ $image->id }}" data-image-type="additional" style="position: absolute; top: 0; right: 0; cursor: pointer; background: red; color: white; padding: 5px;">×</span>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12 mt-3">
                         <div class="card-header" style="background-color: rgb(200, 200, 221)">
-                            <h3 class="card-title">Pricing & Stock & Flavore</h3>
+                            <h3 class="card-title">Specification</h3>
                         </div>
                         <div class="card" style="box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 0, 0, 0.1);">
                             <div class="card-body">
-                                <div class="card-header text-right mb-3" style="background-color: #e0e4e6">
-                                    <button type="button" id="addflavore" name="addflavore" class="btn btn-primary btn-sm">Add Flavor</button>
+                                <div class="mb-3">
+                                    <label for="title">Specification</label>
+                                    <input type="text" name="specification" id="title" class="form-control"  placeholder="Enter Specification" required value="{{ $product->specification ?? '' }}">
                                 </div>
-                                <div id="size" class="element-container"></div>
-                                @if(isset($product))
-                                @foreach ($product->productFlavors as $key => $productFlavor)
-                                    <div id="flavor-container-{{ $key }}" class="flavor-item">
-                                        <div class="row mt-2">
-                                            <div class="col-8 mt-3">
-                                                <label for="flavore">Flavor</label>
-                                                <select class="flavore form-control flavor-select" name="flavore[]">
-                                                    <option value="">Select Flavor</option>
-                                                    @foreach ($flavors as $f)
-                                                        <option value="{{ $f->id }}" 
-                                                            {{ $f->id == optional($productFlavor->flavor)->id ? 'selected' : '' }}>
-                                                            {{ $f->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-2 mt-4">
-                                                <button type="button" class="btn btn-danger btn-sm remove-flavor" data-id="{{ $key }}">Remove</button>
-                                            </div>
-                                        </div>
-                            
-                                        <div class="detail-container mt-3 float-right" id="detail-container-{{ $key }}">
-                                            <button type="button" class="btn btn-primary btn-sm add-detail" data-id="{{ $key }}">Add Detail</button>
-                                            <div class="details-group" id="details-group-{{ $key }}">
-                                                @if(!empty($productFlavor->sizes))
-                                                    @foreach ($productFlavor->sizes as $index => $size)
-                                                        <div class="row mt-2 detail-item" id="detail-{{ $key }}-{{ $index }}">
-                                                            <div class="col-3">
-                                                                <label>Weight</label>
-                                                                <input type="text" name="weight[{{ $key }}][]" class="form-control" value="{{ $size->weight }}" required>
-                                                            </div>
-                                                            <div class="col-3">
-                                                                <label>Price</label>
-                                                                <input type="number" name="price[{{ $key }}][]" class="form-control" value="{{ $size->price }}" required>
-                                                            </div>
-                                                            <div class="col-3">
-                                                                <label>Qty</label>
-                                                                <input type="number" name="qty[{{ $key }}][]" class="form-control" value="{{ $size->qty }}" required>
-                                                            </div>
-                                                            <div class="col-3">
-                                                                <label>Strike Price</label>
-                                                                <input type="number" name="strike_price[{{ $key }}][]" class="form-control" value="{{ $size->strike_price }}" required>
-                                                            </div>
-                                                            <div class="col-3 mt-2">
-                                                                <button type="button" class="btn btn-danger btn-sm remove-detail" data-id="{{ $key }}" data-detail="{{ $index }}">Remove</button>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                @else
-                                                    <p>No sizes available.</p>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @endif
-                            
                             </div>
                         </div>
                     </div>
@@ -193,112 +230,113 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.16.4/tagify.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        $('#summernote').summernote({
-            height: 200, 
-            toolbar: [
-                ['style', ['bold', 'italic', 'underline', 'clear']],
-                ['font', ['strikethrough', 'superscript', 'subscript']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
+ $(document).ready(function () {
+    $('#summernote').summernote({
+        height: 200,
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
 
-        $("#form").validate({
-            rules: {
-                title: { required: true },
-                mainimg: { required: true },
-                description: { required: true },
-            },
-            messages: {
-                title: { required: "This field is required" },
-                mainimg: { required: "Please upload an image" },
-                description: { required: "This field is required" }
-            },
-            errorPlacement: function (error, element) {
-                element.closest('.form-control').after(error);
-            }
-        });
+    $("#form").validate({
+        rules: {
+            title: { required: true },
+            mainimg: { required: true },
+            description: { required: true },
+        },
+        messages: {
+            title: { required: "This field is required" },
+            mainimg: { required: "Please upload an image" },
+            description: { required: "This field is required" }
+        },
+        errorPlacement: function (error, element) {
+            element.closest('.form-control').after(error);
+        }
+    });
 
-        let i = 1; 
-        let j = 1; 
-        var flavors = "";
+    // Initialize indices based on existing data
+    let flewer_index = {{ isset($product) ? count($product->productFlavors) : 0 }};
+    let detailIndex = {{ isset($product) ? max(array_map(function($flavor) { return count($flavor['sizes']); }, $product->productFlavors->toArray())) : 0 }};
 
-        $(document).on('click', '#addflavore', function() {     
-            let flavorHTML = `
-                <div id="flavor-container-${i}" class="flavor-item">
-                    <div class="row mt-2">
-                        <div class="col-8 mt-3">
-                            <label for="flavore">Flavor</label>
-                            <select class="flavore form-control flavor-select" name="flavore[]" required>
-                                <option value="">Select Flavor</option>
-                                <?php foreach ($flavors as $f): ?>
-                                    <option value="<?= $f->id ?>"><?= $f->name ?></option>
-                                <?php endforeach; ?>
-                            </select>
+    $(document).on('click', '#addflavore', function() {
+        let flavorHTML = `
+            <div id="flavor-container-${flewer_index}" class="flavor-item">
+                <div class="card" style="box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 0, 0, 0.1);">
+                    <div class="card-body">
+                        <label for="flavore">Flavor</label>
+                        <div class="row mt-2">
+                            <div class="input-group col-9 mb-1">
+                                <select class="flavore form-control flavor-select" name="flavore[${flewer_index}]" required>
+                                    <option value="">Select Flavor</option>
+                                    @foreach ($flavors as $f)
+                                        <option value="{{ $f->id }}">{{ $f->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-danger btn-sm remove-flavor" data-id="${flewer_index}">Remove</button>
+                            </div>
                         </div>
-                        <div class="col-2 mt-4">
-                            <button type="button" class="btn btn-danger btn-sm remove-flavor" data-id="${i}">Remove</button>
+                        <div class="detail-container mt-3 float-right" id="detail-container-${flewer_index}" style="display: none;">
+                            <button type="button" class="btn btn-primary btn-sm add-detail" data-id="${flewer_index}" data-flewer-index="${flewer_index}">Add Detail</button>
+                            <div class="details-group" id="details-group-${flewer_index}"></div>
                         </div>
-                    </div>
-                    <div class="detail-container mt-3 float-right" id="detail-container-${i}" style="display: none;">
-                        <button type="button" class="btn btn-primary btn-sm add-detail" data-id="${i}">Add Detail</button>
-                        <div class="details-group" id="details-group-${i}"></div>
                     </div>
                 </div>
-            `;
-            $(".element-container").append(flavorHTML);
-            i++;     
-        });
+            </div>
+        `;
+        $(".element-container").append(flavorHTML);
+        flewer_index++;
+    });
 
-        $(document).on("change", ".flavor-select", function () {
-            let parentId = $(this).closest(".flavor-item").attr("id");
-            $("#" + parentId + " .detail-container").show();
-        });
+    $(document).on("change", ".flavor-select", function () {
+        let parentId = $(this).closest(".flavor-item").attr("id");
+        $("#" + parentId + " .detail-container").show();
+    });
 
-        $(document).on("click", ".add-detail", function () {
-            let id = $(this).data("id");
-            let detailHTML = `
-                <div class="row mt-2 detail-item" id="detail-${id}-${j}">
-                    <div class="col-3">
-                        <label>Wieght</label>
-                        <input type="text" name="weight[${id}][]" class="form-control" placeholder="Weight" required>
-                    </div>
-                    <div class="col-3">
-                        <label>Price</label>
-                        <input type="number" name="price[${id}][]" class="form-control" placeholder="Price" required>
-                    </div>
-                    <div class="col-3">
-                        <label>QTY</label>
-                        <input type="number" name="qty[${id}][]" class="form-control" placeholder="Qty" required>
-                    </div>
-                    <div class="col-3">
-                    <label>Drop Price</label>
-                        <input type="number" name="qty[${id}][]" class="form-control" placeholder="Qty" required>
-                    </div>
-                    <div class="col-3 mt-2">
-                        <button type="button" class="btn btn-danger btn-sm remove-detail" data-id="${id}" data-detail="${j}">Remove</button>
-                    </div>
-                    <hr>
+    $(document).on("click", ".add-detail", function () {
+        let id = $(this).data("id");
+        let current_element_flewer_index = $(this).data('flewer-index');
+        let detailHTML = `
+            <div class="row mt-2 detail-item" id="detail-${id}-${detailIndex}">
+                <div class="col-4">
+                    <label>Weight</label>
+                    <input type="text" name="weight[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Weight" required>
                 </div>
-            `;
-            $("#details-group-" + id).append(detailHTML);
-            j++;
-        });
+                <div class="col-8">
+                    <label>Prices</label>
+                    <div class="input-group mb-3">
+                        <input type="number" name="price[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Price" required>
+                        <span class="input-group-text">(₹)</span>
+                        <input type="number" name="strike_price[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Strike Price" required>
+                    </div>
+                </div>
+                <div class="input-group col-7 mb-1">
+                    <label>QTY</label>
+                    <input type="number" name="qty[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Qty" required>
+                    <button type="button" class="btn btn-danger btn-sm remove-detail ml-4" data-id="${id}" data-detail="${detailIndex}">Remove</button>
+                </div>
+                <hr>
+            </div>
+        `;
+        $("#details-group-" + id).append(detailHTML);
+        detailIndex++;
+    });
 
-        $(document).on("click", ".remove-flavor", function () {
-            let id = $(this).data("id");
-            $("#flavor-container-" + id).remove();
-        });
+    $(document).on("click", ".remove-flavor", function () {
+        let id = $(this).data("id");
+        $("#flavor-container-" + id).remove();
+    });
 
-        $(document).on("click", ".remove-detail", function () {
-            let id = $(this).data("id");
-            let detailId = $(this).data("detail");
-            $("#detail-" + id + "-" + detailId).remove();
-        });
+    $(document).on("click", ".remove-detail", function () {
+        let id = $(this).data("id");
+        let detailId = $(this).data("detail");
+        $("#detail-" + id + "-" + detailId).remove();
+    });
 
-        $('#mainImage').change(function () {
+    $('#mainImage').change(function () {
         uploadImages($(this)[0].files, 'main');
     });
 
@@ -345,9 +383,36 @@
         });
     }
 
+    $(document).on('click', '.delete-icon', function () {
+        const imageId = $(this).data('image-id');
+        const imageType = $(this).data('image-type');
+        const imageContainer = $(this).closest('.image-container');
 
-        $(".sidebar .nav-link").removeClass('active');
-        $(".ecom-link").addClass('active');
+        if (confirm('Are you sure you want to delete this image?')) {
+            $.ajax({
+                url: '{{ route("delete.image") }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    image_id: imageId,
+                    image_type: imageType
+                },
+                success: function (response) {
+                    if (response.success) {
+                        imageContainer.remove();
+                    } else {
+                        alert('Failed to delete image.');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while deleting the image.');
+                }
+            });
+        }
     });
+
+    $(".sidebar .nav-link").removeClass('active');
+    $(".ecom-link").addClass('active');
+});
 </script>
 @endsection

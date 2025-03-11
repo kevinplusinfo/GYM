@@ -3,6 +3,7 @@
 namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductFlavorSize extends Model
 {
@@ -19,6 +20,6 @@ class ProductFlavorSize extends Model
     }
     public function productFlavor()
     {
-        return $this->belongsTo(ProductFlavor::class, 'product_flavor_id');
+        return $this->belongsTo(ProductFlavor::class, 'flavor_id');
     }
 }

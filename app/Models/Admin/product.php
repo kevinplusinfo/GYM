@@ -23,7 +23,7 @@ class product extends Model
 
     public function flavors()
     {
-        return $this->hasMany(ProductFlavor::class, 'product_flavor_id');
+        return $this->hasMany(ProductFlavor::class);
     }
     public function productFlavors()
     {

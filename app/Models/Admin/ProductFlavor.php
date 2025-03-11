@@ -10,9 +10,14 @@ class ProductFlavor extends Model
 
     protected $fillable = ['product_id', 'flavor_id']; 
 
+    public function sizes()
+    {
+        return $this->hasMany(ProductFlavorSize::class);
+    }
+
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class);
     }
 
    
@@ -20,11 +25,6 @@ class ProductFlavor extends Model
     public function flavor()
     {
         return $this->belongsTo(Flavor::class, 'flavor_id');
-    }
-
-    public function sizes()
-    {
-        return $this->hasMany(ProductFlavorSize::class, 'product_flavor_id');
     }
 
 }

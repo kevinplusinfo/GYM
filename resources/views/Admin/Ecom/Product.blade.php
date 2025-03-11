@@ -80,7 +80,7 @@
                                     <a href="{{ route('product.update', $product->id) }}" class=""><i class="far fa-edit text-success"></i></a>
                                 </td>
                                 <td>
-                                    <a href="{{ route('product.delete', $product->id) }}" onclick="return confirm('Are You Sure  Delete This Medicine?')"><i class="fas fa-trash text-danger"></i></a>
+                                    <a href="{{ route('product.delete', $product->id) }}" onclick="return confirm('Are You Sure  Delete This Product?')"><i class="fas fa-trash text-danger"></i></a>
                                 </td>
                             </tr>
                             @endforeach

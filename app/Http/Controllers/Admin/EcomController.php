@@ -54,8 +54,10 @@ class EcomController extends Controller
     ], 400);
     }
 
+    
     public function save(Request $request, $id = null)
     {
+        // dd($request->all());
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -65,13 +67,9 @@ class EcomController extends Controller
             'flavore' => 'required|array',
             'flavore.*' => 'integer|exists:flavors,id',
             'weight' => 'required|array',
-            'weight.*' => 'required|array',
             'price' => 'required|array',
-            'price.*' => 'required|array',
             'qty' => 'required|array',
-            'qty.*' => 'required|array',
-            'strike_price' => 'nullable|array',
-            'strike_price.*' => 'nullable|array'
+            'strike_price' => 'nullable|array'
         ]);
     
         $product = $id ? Product::find($id) : new Product();
@@ -98,10 +96,10 @@ class EcomController extends Controller
                 ProductImage::where('product_id', $id)->delete();
             }
             foreach ($request->file('images') as $file) {
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image' => $file->store('product_images', 'public')
-                ]);
+                $productImage = new ProductImage();
+                $productImage->product_id = $product->id;
+                $productImage->image = $file->store('product_images', 'public');
+                $productImage->save();
             }
         }
     
@@ -111,30 +109,30 @@ class EcomController extends Controller
             ->whereNotIn('flavor_id', $newFlavors)
             ->delete();
     
-        foreach ($request->flavore as $index => $flavor_id) {
-            if (!empty($flavor_id) && is_numeric($flavor_id)) {
-                $productFlavor = ProductFlavor::updateOrCreate(
-                    ['product_id' => $product->id, 'flavor_id' => $flavor_id],
-                    ['product_id' => $product->id, 'flavor_id' => $flavor_id]
+        foreach ($newFlavors as $flavorIndex => $flavor_id) {
+            $productFlavor = ProductFlavor::firstOrCreate([
+                'product_id' => $product->id,
+                'flavor_id' => $flavor_id
+            ]);
+    
+            $newWeights = $request->weight[$flavorIndex] ?? [];
+    
+            ProductFlavorSize::where('product_flavor_id', $productFlavor->id)
+                ->whereNotIn('weight', $newWeights)
+                ->delete();
+    
+            foreach ($newWeights as $key => $weight) {
+                ProductFlavorSize::updateOrCreate(
+                    [
+                        'product_flavor_id' => $productFlavor->id,
+                        'weight' => $weight
+                    ],
+                    [
+                        'price' => $request->price[$flavorIndex][$key],
+                        'qty' => $request->qty[$flavorIndex][$key],
+                        'strike_price' => $request->strike_price[$flavorIndex][$key] ?? null
+                    ]
                 );
-    
-                if (
-                    isset($request->weight[$index]) && is_array($request->weight[$index]) &&
-                    isset($request->price[$index]) && is_array($request->price[$index]) &&
-                    isset($request->qty[$index]) && is_array($request->qty[$index])
-                ) {
-                    ProductFlavorSize::where('product_flavor_id', $productFlavor->id)->delete();
-    
-                    foreach ($request->weight[$index] as $subIndex => $weight) {
-                        $flavorSize = new ProductFlavorSize();
-                        $flavorSize->product_flavor_id = $productFlavor->id;
-                        $flavorSize->weight = $weight;
-                        $flavorSize->price = $request->price[$index][$subIndex] ?? 0;
-                        $flavorSize->qty = $request->qty[$index][$subIndex] ?? 0;
-                        $flavorSize->strike_price = $request->strike_price[$index][$subIndex] ?? null;
-                        $flavorSize->save();
-                    }
-                }
             }
         }
     
@@ -142,65 +140,60 @@ class EcomController extends Controller
     }
     
 
-    
     public function delete($id)
     {
-        $product = Product::with('images')->find($id);
-    
+        $product = Product::with('images', 'flavors.sizes')->find($id);
+
         if (!$product) {
             return redirect()->back()->with('error', 'Product not found.');
         }
-    
+
         if ($product->main_image && Storage::exists('public/' . $product->main_image)) {
             Storage::delete('public/' . $product->main_image);
         }
-    
+
         foreach ($product->images as $image) {
             if ($image->image && Storage::exists('public/' . $image->image)) {
                 Storage::delete('public/' . $image->image);
             }
             $image->delete();
         }
-        ProductFlavorSize::where('product_id', $id)->delete();
-        ProductFlavorSize::where('product_flavor_id', $id)->delete();
+
+        foreach ($product->flavors as $flavor) {
+            ProductFlavorSize::where('product_flavor_id', $flavor->id)->delete();
+        }
+
+        ProductFlavor::where('product_id', $product->id)->delete();
+
         $product->delete();
-    
+
         return redirect()->route('product.index')->with('success', 'Product and all associated data deleted successfully.');
     }
+    public function deleteImage(Request $request)
+    {
+        $imageId = $request->input('image_id');
+        $imageType = $request->input('image_type');
+
+        if ($imageType === 'main') {
+            $product = Product::find($imageId);
+            if ($product && $product->main_image) {
+                Storage::delete('public/' . $product->main_image);
+                $product->main_image = null;
+                $product->save();
+                return response()->json(['success' => true]);
+            }
+        } elseif ($imageType === 'additional') {
+            $image = ProductImage::find($imageId);
+            if ($image && $image->image) {
+                Storage::delete('public/' . $image->image);
+                $image->delete();
+                return response()->json(['success' => true]);
+            }
+        }
+
+        return response()->json(['success' => false]);
+    }
+
 }    
 
 
-// public function delete($id)
-// {
-//     $product = Product::with('images', 'flavors.sizes')->find($id);
-
-//     if (!$product) {
-//         return redirect()->back()->with('error', 'Product not found.');
-//     }
-
-//     // Delete Main Image
-//     if ($product->main_image && Storage::exists('public/' . $product->main_image)) {
-//         Storage::delete('public/' . $product->main_image);
-//     }
-
-//     // Delete Product Images
-//     foreach ($product->images as $image) {
-//         if ($image->image && Storage::exists('public/' . $image->image)) {
-//             Storage::delete('public/' . $image->image);
-//         }
-//         $image->delete();
-//     }
-
-//     // Delete Product Flavors and Their Sizes
-//     foreach ($product->flavors as $flavor) {
-//         ProductFlavorSize::where('product_flavor_id', $flavor->id)->delete();
-//     }
-
-//     // Delete Product Flavors after their sizes are deleted
-//     ProductFlavor::where('product_id', $product->id)->delete();
-
-//     // Delete Product
-//     $product->delete();
-
-//     return redirect()->route('product.index')->with('success', 'Product and all associated data deleted successfully.');
-// }

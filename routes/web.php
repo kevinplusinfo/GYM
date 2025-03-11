@@ -124,6 +124,10 @@ use App\Http\Controllers\Customer\CustomerAuthController;
                 Route::post('/upload-images', [EcomController::class, 'uploadImages'])->name('product.upload.images');
 
                 Route::get('/delete/{id}', [EcomController::class, 'delete'])->name('product.delete');
+                Route::post('/delete-image', [EcomController::class, 'deleteImage'])->name('delete.image');
+
+
+                
             });
             
 
