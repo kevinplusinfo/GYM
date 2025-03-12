@@ -151,6 +151,10 @@ class EcomController extends Controller
     
         $flavorsToDelete = array_diff($existingFlavors, $request->flavore);
         if (!empty($flavorsToDelete)) {
+            $product->flavors()->whereIn('flavor_id', $flavorsToDelete)->each(function ($flavor) {
+                $flavor->sizes()->delete();
+            });
+
             $product->flavors()->whereIn('flavor_id', $flavorsToDelete)->delete();
         }
     
