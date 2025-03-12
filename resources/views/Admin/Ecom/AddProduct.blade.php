@@ -19,18 +19,7 @@
     .cursor-pointer {
         cursor: pointer;
     }
-    .delete-icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    cursor: pointer;
-    background: red;
-    color: white;
-    padding: 5px;
-    border-radius: 50%;
-    font-size: 16px;
-    line-height: 1;
-}
+    
 </style>
 @endsection
 
@@ -175,20 +164,30 @@
                                     <div id="mainImagePreview">
                                         @if(isset($product) && $product->main_image)
                                             <div class="image-container" style="position: relative; display: inline-block;">
-                                                <img src="{{ Storage::url($product->main_image) }}" class="img-fluid mt-2" style="max-width: 200px;">
-                                                <span class="delete-icon" data-image-id="{{ $product->id }}" data-image-type="main" style="position: absolute; top: 0; right: 0; cursor: pointer; background: red; color: white; padding: 5px;">×</span>
+                                                <img src="{{ asset('storage/'.$product->main_image) }}" class="img-fluid mt-2" style="max-width: 200px;">
+                                                <span class="delete-icon" data-image-id="{{ $product->id }}" 
+                                                      data-image-type="main" 
+                                                      data-image-path="{{ $product->main_image }}" 
+                                                      style="position: absolute; top: 0; right: 0; cursor: pointer; color: white;  padding: 5px; font-size: 20px;">×</span>
                                             </div>
+                                            <input type="hidden" name="main_image_path" value="{{ $product->main_image }}">
                                         @endif
                                     </div>
+                                </div>
                             
-                                    <label class="mt-4">Additional Images</label>
+                                <div class="mb-3">
+                                    <label>Additional Images</label>
                                     <input type="file" id="additionalImages" name="images[]" class="form-control" multiple>
                                     <div id="additionalImagePreview">
                                         @if(isset($product->images))
-                                            @foreach ($product->images as $index => $image)
+                                            @foreach ($product->images as $image)
                                                 <div class="image-container" style="position: relative; display: inline-block;">
-                                                    <img src="{{ Storage::url($image->image) }}" class="img-fluid mt-2" style="max-width: 200px;">
-                                                    <span class="delete-icon" data-image-id="{{ $image->id }}" data-image-type="additional" style="position: absolute; top: 0; right: 0; cursor: pointer; background: red; color: white; padding: 5px;">×</span>
+                                                    <img src="{{ asset('storage/'.$image->image) }}" class="img-fluid mt-2" style="max-width: 200px;">
+                                                    <span class="delete-icon" data-image-id="{{ $image->id }}" 
+                                                          data-image-type="additional" 
+                                                          data-image-path="{{ $image->image }}" 
+                                                          style="position: absolute; top: 0; right: 0; cursor: pointer; color: white;  padding: 5px; font-size: 20px;">×</span>
+                                                    <input type="hidden" name="uploaded_images[]" value="{{ $image->image }}">
                                                 </div>
                                             @endforeach
                                         @endif
@@ -258,7 +257,6 @@
         }
     });
 
-    // Initialize indices based on existing data
     let flewer_index = {{ isset($product) ? count($product->productFlavors) : 0 }};
     let detailIndex = {{ isset($product) ? max(array_map(function($flavor) { return count($flavor['sizes']); }, $product->productFlavors->toArray())) : 0 }};
 
@@ -337,8 +335,8 @@
     });
 
     $('#mainImage').change(function () {
-        uploadImages($(this)[0].files, 'main');
-    });
+    uploadImages($(this)[0].files, 'main');
+});
 
     $('#additionalImages').change(function () {
         uploadImages($(this)[0].files, 'additional');
@@ -364,15 +362,20 @@
                 if (response.success) {
                     let previewDiv = type === 'main' ? '#mainImagePreview' : '#additionalImagePreview';
                     $(previewDiv).empty();
-                    response.paths.forEach(function (path) {
-                        $(previewDiv).append(`<img src="${path}" class="img-fluid mt-2" style="max-width: 200px;">`);
-                    });
 
                     response.paths.forEach(function (path) {
+                        $(previewDiv).append(`
+                            <div class="image-container" style="position: relative; display: inline-block;">
+                                <img src="/storage/${path}" class="img-fluid mt-2" style="max-width: 200px;">
+                                <span class="delete-icon" data-image-id="0" data-image-type="${type}" data-image-path="${path}" 
+                                    style="position: absolute; top: 0; right: 0; cursor: pointer; color: white;  padding: 5px; font-size: 20px;">×</span>
+                            </div>
+                        `);
+
                         $('<input>').attr({
                             type: 'hidden',
                             name: type === 'main' ? 'main_image_path' : 'uploaded_images[]',
-                            value: path
+                            value: path // Store only folder path in hidden input
                         }).appendTo('form');
                     });
                 }
@@ -384,32 +387,36 @@
     }
 
     $(document).on('click', '.delete-icon', function () {
-        const imageId = $(this).data('image-id');
-        const imageType = $(this).data('image-type');
-        const imageContainer = $(this).closest('.image-container');
+        let imageId = $(this).data('image-id');
+        let imageType = $(this).data('image-type');
+        let imagePath = $(this).data('image-path'); 
+        let parentDiv = $(this).closest('.image-container');
 
         if (confirm('Are you sure you want to delete this image?')) {
             $.ajax({
-                url: '{{ route("delete.image") }}',
-                type: 'POST',
+                url: "{{ route('delete.image') }}",
+                type: "GET",
                 data: {
-                    _token: '{{ csrf_token() }}',
+                    _token: $('meta[name="csrf-token"]').attr('content'),
                     image_id: imageId,
-                    image_type: imageType
+                    image_type: imageType,
+                    image_path: imagePath
                 },
                 success: function (response) {
                     if (response.success) {
-                        imageContainer.remove();
+                        parentDiv.remove();
                     } else {
-                        alert('Failed to delete image.');
+                        alert('Failed to delete the image.');
                     }
                 },
                 error: function () {
-                    alert('An error occurred while deleting the image.');
+                    alert('Error deleting the image.');
                 }
             });
         }
     });
+
+
 
     $(".sidebar .nav-link").removeClass('active');
     $(".ecom-link").addClass('active');

@@ -15,53 +15,50 @@ use Illuminate\Support\Facades\Storage;
 
 class EcomController extends Controller
 {
-    public function index()
-    {
+    public function index(){
         $products = Product::with(['images'])->get();
         return view('Admin.Ecom.product', compact('products'));
     }
 
-    public function form($id = null)
-{
-    $product =  Product::with(['images', 'productFlavors.flavor', 'productFlavors.sizes'])->find($id);
-    $flavors = Flavor::all();
+    public function form($id = null){
+        $product =  Product::with(['images', 'productFlavors.flavor', 'productFlavors.sizes'])->find($id);
+        $flavors = Flavor::all();
 
-    return view('Admin.Ecom.AddProduct', compact('product', 'flavors'));
-}
+        return view('Admin.Ecom.AddProduct', compact('product', 'flavors'));
+    }
 
     public function uploadImages(Request $request)
     {
-    if ($request->hasFile('images')) {
-        $uploadedPaths = [];
-        $isMainImage = $request->input('is_main') === 'true'; // Check if it's a main image
+        if ($request->hasFile('images')) {
+            $uploadedPaths = [];
+            $isMainImage = $request->input('is_main') === 'true'; 
 
-        foreach ($request->file('images') as $file) {
-            $folder = $isMainImage ? 'products' : 'product_images'; // Store in different folders
-            $path = $file->store($folder, 'public'); // Save file in storage
+            foreach ($request->file('images') as $file) {
+                $folder = $isMainImage ? 'products' : 'product_images'; 
+                $path = $file->store($folder, 'public'); 
+                $uploadedPaths[] = str_replace('public/', '', $path); 
+            }
 
-            $uploadedPaths[] = Storage::url($path); // Get public URL
+            return response()->json([
+                'success' => true,
+                'paths' => $uploadedPaths
+            ]);
         }
 
         return response()->json([
-            'success' => true,
-            'paths' => $uploadedPaths
-        ]);
+            'success' => false,
+            'message' => 'No images were uploaded'
+        ], 400);
     }
-
-    return response()->json([
-        'success' => false,
-        'message' => 'No images were uploaded'
-    ], 400);
-    }
-
-    
+ 
     public function save(Request $request, $id = null)
     {
+        // dd($id);
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'specification' => 'required|string',
-            'mainimg' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'mainimg' => $id ? 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'flavore' => 'required|array',
             'flavore.*' => 'integer|exists:flavors,id',
@@ -80,21 +77,36 @@ class EcomController extends Controller
         $product->title = $request->title;
         $product->description = $request->description;
         $product->specification = $request->specification;
-    
-        if ($request->hasFile('mainimg')) {
-            $product->main_image = $request->file('mainimg')->store('products', 'public');
+
+        if ($request->has('main_image_path')) {
+            $product->main_image = $request->main_image_path;
         }
-    
+        
         $product->save();
-    
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image' => $file->store('product_images', 'public')
-                ]);
+        
+        if ($request->has('uploaded_images')) {
+            $existingImages = ProductImage::where('product_id', $product->id)
+                                          ->pluck('image')
+                                          ->toArray();
+        
+            $newImages = $request->uploaded_images;
+        
+            $imagesToDelete = array_diff($existingImages, $newImages);
+        
+            ProductImage::where('product_id', $product->id)
+                        ->whereIn('image', $imagesToDelete)
+                        ->delete();
+        
+            foreach ($newImages as $imagePath) {
+                if (!in_array($imagePath, $existingImages)) {
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image' => $imagePath
+                    ]);
+                }
             }
         }
+        
     
         $existingFlavors = $product->flavors()->pluck('flavor_id')->toArray();
     
@@ -145,8 +157,6 @@ class EcomController extends Controller
         return redirect()->route('product.index')->with('success', 'Product saved successfully.');
     }
 
-    
-
     public function delete($id)
     {
         $product = Product::with('images', 'flavors.sizes')->find($id);
@@ -176,29 +186,32 @@ class EcomController extends Controller
 
         return redirect()->route('product.index')->with('success', 'Product and all associated data deleted successfully.');
     }
+
     public function deleteImage(Request $request)
     {
         $imageId = $request->input('image_id');
         $imageType = $request->input('image_type');
+        $imagePath = $request->input('image_path');
 
         if ($imageType === 'main') {
             $product = Product::find($imageId);
-            if ($product && $product->main_image) {
-                Storage::delete('public/' . $product->main_image);
+            if ($product && $product->main_image === $imagePath) {
+                Storage::delete('public/' . $imagePath);
+
                 $product->main_image = null;
                 $product->save();
                 return response()->json(['success' => true]);
             }
-        } elseif ($imageType === 'additional') {
+        } elseif ($imageType == 'additional') {
             $image = ProductImage::find($imageId);
-            if ($image && $image->image) {
-                Storage::delete('public/' . $image->image);
+            if ($image && $image->image == $imagePath) {
+                Storage::delete('public/' . $imagePath);
                 $image->delete();
                 return response()->json(['success' => true]);
             }
         }
 
-        return response()->json(['success' => false]);
+        return response()->json(['success' => false, 'message' => 'Image not found'], 404);
     }
 
 }    
