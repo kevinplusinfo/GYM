@@ -29,124 +29,121 @@ class EcomController extends Controller
     return view('Admin.Ecom.AddProduct', compact('product', 'flavors'));
 }
 
-    public function uploadImages(Request $request) {
-        if ($request->hasFile('images')) {
-            $uploadedPaths = [];
-            $isMainImage = $request->input('is_main') === 'true'; 
+    public function uploadImages(Request $request)
+    {
+    if ($request->hasFile('images')) {
+        $uploadedPaths = [];
+        $isMainImage = $request->input('is_main') === 'true'; // Check if it's a main image
 
-            foreach ($request->file('images') as $file) {
-                $folder = $isMainImage ? 'products' : 'product_images'; 
-                $path = $file->store($folder, 'public'); 
+        foreach ($request->file('images') as $file) {
+            $folder = $isMainImage ? 'products' : 'product_images'; // Store in different folders
+            $path = $file->store($folder, 'public'); // Save file in storage
 
-                $uploadedPaths[] = Storage::url($path); 
-            }
-
-            return response()->json([
-                'success' => true,
-                'paths' => $uploadedPaths
-            ]);
+            $uploadedPaths[] = Storage::url($path); // Get public URL
         }
 
         return response()->json([
-            'success' => false,
-            'message' => 'No images were uploaded'
-        ], 400);
+            'success' => true,
+            'paths' => $uploadedPaths
+        ]);
+    }
+
+    return response()->json([
+        'success' => false,
+        'message' => 'No images were uploaded'
+    ], 400);
     }
 
     
     public function save(Request $request, $id = null)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'specification' => 'required|string',
-        'mainimg' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        'flavore' => 'required|array',
-        'flavore.*' => 'integer|exists:flavors,id',
-        'weight' => 'required|array',
-        'price' => 'required|array',
-        'qty' => 'required|array',
-        'strike_price' => 'nullable|array'
-    ]);
-
-    if ($id) {
-        $product = Product::findOrFail($id);
-    } else {
-        $product = new Product();
-    }
-
-    $product->title = $request->title;
-    $product->description = $request->description;
-    $product->specification = $request->specification;
-
-    if ($request->hasFile('mainimg')) {
-        $product->main_image = $request->file('mainimg')->store('products', 'public');
-    }
-
-    $product->save();
-
-    if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $file) {
-            ProductImage::create([
-                'product_id' => $product->id,
-                'image' => $file->store('product_images', 'public')
-            ]);
-        }
-    }
-
-    $existingFlavors = $product->flavors()->pluck('flavor_id')->toArray();
-
-    foreach ($request->flavore as $flavorIndex => $flavor_id) {
-        if (in_array($flavor_id, $existingFlavors)) {
-            $productFlavor = $product->flavors()->where('flavor_id', $flavor_id)->first();
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'specification' => 'required|string',
+            'mainimg' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'flavore' => 'required|array',
+            'flavore.*' => 'integer|exists:flavors,id',
+            'weight' => 'required|array',
+            'price' => 'required|array',
+            'qty' => 'required|array',
+            'strike_price' => 'nullable|array'
+        ]);
+    
+        if ($id) {
+            $product = Product::findOrFail($id);
         } else {
-            $productFlavor = ProductFlavor::create([
-                'product_id' => $product->id,
-                'flavor_id' => $flavor_id
-            ]);
+            $product = new Product();
         }
-
-        $existingSizes = $productFlavor->sizes()->pluck('id')->toArray();
-        $requestSizes = array_keys($request->weight[$flavorIndex]);
-
-        foreach ($request->weight[$flavorIndex] as $key => $weight) {
-            if (in_array($key, $existingSizes)) {
-                $size = $productFlavor->sizes()->find($key);
-                $size->update([
-                    'weight' => $weight,
-                    'price' => $request->price[$flavorIndex][$key],
-                    'qty' => $request->qty[$flavorIndex][$key],
-                    'strike_price' => $request->strike_price[$flavorIndex][$key] ?? null
-                ]);
-            } else {
-                ProductFlavorSize::create([
-                    'product_flavor_id' => $productFlavor->id,
-                    'weight' => $weight,
-                    'price' => $request->price[$flavorIndex][$key],
-                    'qty' => $request->qty[$flavorIndex][$key],
-                    'strike_price' => $request->strike_price[$flavorIndex][$key] ?? null
+    
+        $product->title = $request->title;
+        $product->description = $request->description;
+        $product->specification = $request->specification;
+    
+        if ($request->hasFile('mainimg')) {
+            $product->main_image = $request->file('mainimg')->store('products', 'public');
+        }
+    
+        $product->save();
+    
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image' => $file->store('product_images', 'public')
                 ]);
             }
         }
-
-        $sizesToDelete = array_diff($existingSizes, $requestSizes);
-        if (!empty($sizesToDelete)) {
-            $productFlavor->sizes()->whereIn('id', $sizesToDelete)->delete();
+    
+        $existingFlavors = $product->flavors()->pluck('flavor_id')->toArray();
+    
+        foreach ($request->flavore as $flavorIndex => $flavor_id) {
+            if (in_array($flavor_id, $existingFlavors)) {
+                $productFlavor = $product->flavors()->where('flavor_id', $flavor_id)->first();
+            } else {
+                $productFlavor = ProductFlavor::create([
+                    'product_id' => $product->id,
+                    'flavor_id' => $flavor_id
+                ]);
+            }
+    
+            $existingSizes = $productFlavor->sizes()->pluck('id')->toArray();
+            $requestSizes = array_keys($request->weight[$flavorIndex]);
+    
+            foreach ($request->weight[$flavorIndex] as $key => $weight) {
+                if (in_array($key, $existingSizes)) {
+                    $size = $productFlavor->sizes()->find($key);
+                    $size->update([
+                        'weight' => $weight,
+                        'price' => $request->price[$flavorIndex][$key],
+                        'qty' => $request->qty[$flavorIndex][$key],
+                        'strike_price' => $request->strike_price[$flavorIndex][$key] ?? null
+                    ]);
+                } else {
+                    ProductFlavorSize::create([
+                        'product_flavor_id' => $productFlavor->id,
+                        'weight' => $weight,
+                        'price' => $request->price[$flavorIndex][$key],
+                        'qty' => $request->qty[$flavorIndex][$key],
+                        'strike_price' => $request->strike_price[$flavorIndex][$key] ?? null
+                    ]);
+                }
+            }
+    
+            $sizesToDelete = array_diff($existingSizes, $requestSizes);
+            if (!empty($sizesToDelete)) {
+                $productFlavor->sizes()->whereIn('id', $sizesToDelete)->delete();
+            }
         }
+    
+        $flavorsToDelete = array_diff($existingFlavors, $request->flavore);
+        if (!empty($flavorsToDelete)) {
+            $product->flavors()->whereIn('flavor_id', $flavorsToDelete)->delete();
+        }
+    
+        return redirect()->route('product.index')->with('success', 'Product saved successfully.');
     }
-
-    $flavorsToDelete = array_diff($existingFlavors, $request->flavore);
-    if (!empty($flavorsToDelete)) {
-        $product->flavors()->whereIn('flavor_id', $flavorsToDelete)->each(function ($flavor) {
-            $flavor->sizes()->delete();
-        });
-
-        $product->flavors()->whereIn('flavor_id', $flavorsToDelete)->delete();
-    }
-
-    return redirect()->route('product.index')->with('success', 'Product saved successfully.');
-}
 
     
 

@@ -98,5 +98,7 @@
 <script>
     $(".sidebar .nav-link").removeClass('active');
     $(".ecom-link").addClass('active');
+    $(".category-menu").addClass('menu-open');
+
 </script>
 @endsection

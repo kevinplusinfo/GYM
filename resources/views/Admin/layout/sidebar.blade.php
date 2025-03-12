@@ -60,7 +60,7 @@
 						</p>
 					</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item menu-is-opening category-menu  ">
 					<a href="#" class="nav-link ecom-link">
 						<i class=" nav-icon fa-brands fa-intercom"></i>
 						<p>

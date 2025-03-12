@@ -3,13 +3,9 @@
 namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductFlavor extends Model
-
 {
-
-
     protected $table = 'product_flavor'; 
 
     protected $fillable = ['product_id', 'flavor_id']; 

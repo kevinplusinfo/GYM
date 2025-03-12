@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductFlavorSize extends Model
 {
-
     protected $fillable = ['product_flavor_id', 'weight', 'price', 'qty', 'strike_price'];
 
     public function product()
