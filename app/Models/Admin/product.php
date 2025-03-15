@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Admin\{
     Flavor
 };
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class product extends Model
 {
+    use SoftDeletes;
     protected $fillable = ['title', 'description', 'specifiaction', 'main_image'];
 
     public function images()

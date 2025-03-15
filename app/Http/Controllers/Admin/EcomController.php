@@ -53,7 +53,6 @@ class EcomController extends Controller
  
     public function save(Request $request, $id = null)
     {
-        // dd($id);
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -106,7 +105,6 @@ class EcomController extends Controller
                 }
             }
         }
-        
     
         $existingFlavors = $product->flavors()->pluck('flavor_id')->toArray();
     
@@ -214,7 +212,7 @@ class EcomController extends Controller
                 return response()->json(['success' => true]);
             }
         }
-
+        
         return response()->json(['success' => false, 'message' => 'Image not found'], 404);
     }
 

@@ -83,17 +83,17 @@
             <!-- Tabs -->
             <ul class="nav nav-tabs" id="profileTabs" role="tablist">
                 <li class="nav-item">
-                    <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">
+                    <button class="nav-link active" id="general-tab" data-bs-toggle="tab" style="background-color:#151515;color:white;border:none" data-bs-target="#general" type="button" role="tab">
                         General
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+                    <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" style="background-color:#151515;color:white;border:none"" type="button" role="tab">
                         Security
                     </button>
                 </li>
             </ul>
-
+            <br>
             <!-- Single Form for Both Tabs -->
             <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf    

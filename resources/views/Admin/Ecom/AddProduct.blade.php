@@ -98,7 +98,6 @@
                                                                         </option>
                                                                     @endforeach
                                                                 </select>
-                                                        
                                                                 <button type="button" class="btn btn-danger btn-sm remove-flavor" data-id="{{ $flavorIndex }}">Remove</button>
                                                              </div>
                                                         </div>
@@ -111,13 +110,13 @@
                                                                 @php $detailIndex = 0; @endphp
                                                                 @foreach ($productFlavor->sizes as $index => $size)
                                                                     <div class="row mt-2 detail-item" id="detail-{{ $flavorIndex }}-{{ $detailIndex }}">
-                                                                        <div class="col-3">
+                                                                        <div class="col-5">
                                                                             <label>Weight</label>
                                                                             <input type="text" name="weight[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->weight }}" required>
                                                                         </div>
                                                                         
                                                                        
-                                                                        <div class="col-8">
+                                                                        <div class="col-7">
                                                                             <label>Prices</label>
                                                                             <div class="input-group mb-3">
                                                                                 <input type="number" name="price[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->price }}" required>
@@ -125,11 +124,14 @@
                                                                                 <input type="number" name="strike_price[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->strike_price }}" required>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="input-group col-7 mb-1">
-                                                                            <label>Qty</label>
-                                                                            <input type="number" name="qty[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->qty }}" required>
-                                                                       
-                                                                            <button type="button" class="btn btn-danger btn-sm remove-detail ml-5" data-id="{{ $flavorIndex }}" data-detail="{{ $detailIndex }}">Remove</button>
+                                                                        <div class="row ml-2">
+                                                                            <div class="col-mb-5">
+                                                                                <label>Qty</label>
+                                                                                <input type="number" name="qty[{{ $flavorIndex }}][]" class="form-control" value="{{ $size->qty }}" required>
+                                                                            </div>
+                                                                            <div class="col">
+                                                                                <button type="button" class="btn btn-danger btn-sm remove-detail ml-3" data-id="{{ $flavorIndex }}" data-detail="{{ $detailIndex }}" style="margin-top:35px;">Remove</button>
+                                                                            </div>
                                                                         </div>
                                                                     </div> <hr>
                                                                     @php $detailIndex++; @endphp
@@ -229,7 +231,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.16.4/tagify.min.js"></script>
 
 <script>
- $(document).ready(function () {
+$(document).ready(function () {
     $('#summernote').summernote({
         height: 200,
         toolbar: [
@@ -299,11 +301,11 @@
         let current_element_flewer_index = $(this).data('flewer-index');
         let detailHTML = `
             <div class="row mt-2 detail-item" id="detail-${id}-${detailIndex}">
-                <div class="col-4">
+                <div class="col-5">
                     <label>Weight</label>
                     <input type="text" name="weight[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Weight" required>
                 </div>
-                <div class="col-8">
+                <div class="col-7">
                     <label>Prices</label>
                     <div class="input-group mb-3">
                         <input type="number" name="price[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Price" required>
@@ -311,10 +313,15 @@
                         <input type="number" name="strike_price[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Strike Price" required>
                     </div>
                 </div>
-                <div class="input-group col-7 mb-1">
+                <div class="row ml-2">
+                    <div class="col-mb-5">
+                        
                     <label>QTY</label>
                     <input type="number" name="qty[${current_element_flewer_index}][]" class="form-control" placeholder="Enter Qty" required>
-                    <button type="button" class="btn btn-danger btn-sm remove-detail ml-4" data-id="${id}" data-detail="${detailIndex}">Remove</button>
+                   </div>
+                   <div class="col">
+                    <button type="button" class="btn btn-danger btn-sm remove-detail ml-3" data-id="${id}" data-detail="${detailIndex}" style="margin-top:35px;">Remove</button>
+                    </div>
                 </div>
                 <hr>
             </div>
@@ -336,7 +343,7 @@
 
     $('#mainImage').change(function () {
     uploadImages($(this)[0].files, 'main');
-});
+    });
 
     $('#additionalImages').change(function () {
         uploadImages($(this)[0].files, 'additional');
@@ -416,10 +423,10 @@
         }
     });
 
-
-
     $(".sidebar .nav-link").removeClass('active');
     $(".ecom-link").addClass('active');
+    $(".category-menu").addClass('menu-open');
+
 });
 </script>
 @endsection
