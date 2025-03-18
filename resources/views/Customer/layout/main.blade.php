@@ -34,6 +34,8 @@
                 <li><a href="{{route('class')}}">Classes</a></li>
                 <li><a href="{{route('services')}}">Services</a></li>
                 <li><a href="{{route('team')}}">Our Team</a></li>
+                <li><a href="{{route('product')}}">Product</a></li>
+
                 <li><a href="#">Pages</a>
                     <ul class="dropdown">
                         <li><a href="{{route('about')}}">About us</a></li>

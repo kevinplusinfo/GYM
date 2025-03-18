@@ -30,6 +30,7 @@
                             </li>
                             <li><a href="{{route('contact')}}">Contact</a></li>
                             <li><a href="{{route('appointment')}}">Appointment</a></li>
+                            <li><a href="{{route('product')}}">Product</a></li>
                             @if(Auth::check()) 
                                 <li>
                                     <a href="{{ route('clogout') }}"

@@ -21,7 +21,7 @@
                     <div class="fs-widget">
                         <h4>Useful links</h4>
                         <ul>
-                            <li><a href="#">About</a></li>
+                            <li><a href="{{route('about')}}">About</a></li>
                             <li><a href="{{route('blog')}}">Blog</a></li>
                             <li><a href="{{route('class')}}">Classes</a></li>
                             <li><a href="{{route('contact')}}">Contact</a></li>

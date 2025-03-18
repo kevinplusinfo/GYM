@@ -21,11 +21,6 @@ use App\Http\Controllers\Admin\AdminFeedbackController;
 
 
 
-
-
-
-
-
 #customer
 use App\Http\Controllers\Customer\GalleryController;
 use App\Http\Controllers\Customer\IndexController;
@@ -39,6 +34,8 @@ use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\TrainerController;
 use App\Http\Controllers\Customer\FeedbackController;
 use App\Http\Controllers\Customer\CustomerAuthController;
+use App\Http\Controllers\Customer\ProductController;
+
 
 
 
@@ -125,8 +122,6 @@ use App\Http\Controllers\Customer\CustomerAuthController;
 
                 Route::get('/delete/{id}', [EcomController::class, 'delete'])->name('product.delete');
                 Route::get('/delete-image', [EcomController::class, 'deleteImage'])->name('delete.image');
-
-
                 
             });
             
@@ -184,7 +179,7 @@ Route::get('register', [AuthController::class, 'showRegisterForm'])->name('regis
 Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->name('clogout');
 
-Route::middleware(['checkUser'])->group(function () {
+// Route::middleware(['checkUser'])->group(function () {
     Route::get('appointment', [AppointmentController::class, 'appointment'])->name('appointment');
     Route::post('store', [AppointmentController::class, 'store'])->name('appointment.store');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -203,10 +198,14 @@ Route::middleware(['checkUser'])->group(function () {
         Route::post('/store-order', [PlanController::class, 'store'])->name('customer.payment.store');
         Route::post('/verify-payment', [PlanController::class, 'verifyPayment'])->name('customer.payment.verify'); 
         Route::get('/order/{order_id}', [PlanController::class, 'purchaseplan'])->name('customer.purchase.plan'); 
+    });
 
+    Route::prefix('product')->group(function(){
+        Route::get('/', [ProductController::class, 'index'])->name('product');
+        Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('detail');
 
     });
     
 
-});
+// });
 
