@@ -169,6 +169,11 @@ Route::get('/services', [PagesController::class, 'services'])->name('services');
 Route::get('/timetable', [PagesController::class, 'timetable'])->name('timetable');
 
 
+Route::prefix('product')->group(function(){
+    Route::get('/', [ProductController::class, 'index'])->name('product');
+    Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('detail');
+});
+
 
 
 
@@ -179,7 +184,7 @@ Route::get('register', [AuthController::class, 'showRegisterForm'])->name('regis
 Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->name('clogout');
 
-// Route::middleware(['checkUser'])->group(function () {
+Route::middleware(['checkUser'])->group(function () {
     Route::get('appointment', [AppointmentController::class, 'appointment'])->name('appointment');
     Route::post('store', [AppointmentController::class, 'store'])->name('appointment.store');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -201,11 +206,12 @@ Route::post('logout', [AuthController::class, 'logout'])->name('clogout');
     });
 
     Route::prefix('product')->group(function(){
-        Route::get('/', [ProductController::class, 'index'])->name('product');
-        Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('detail');
+        Route::post('/store/{id?}', [ProductController::class, 'store'])->name('cart.store');
+        Route::get('/cart', [ProductController::class, 'cartdetail'])->name('cart.detail');
+        Route::post('/cart/remove', [ProductController::class, 'clearCart'])->name('cart.remove');
 
     });
     
 
-// });
+});
 

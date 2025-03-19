@@ -63,7 +63,7 @@
                             <a href="{{$setting->twitter_link}}"target="_blank"><i class="fa fa-twitter"></i></a>
                             <a href="{{$setting->youtube_link}}"target="_blank"><i class="fa fa-youtube-play"></i></a>
                             <a href="{{$setting->instagram_link}}"target="_blank"><i class="fa fa-instagram"></i></a>
-                        </div>
+                            <a href="{{route('cart.detail')}}"><i class="fa fa-shopping-cart" style="color: white"></i></a>                                               </div>
                     </div>
                 </div>
             </div>

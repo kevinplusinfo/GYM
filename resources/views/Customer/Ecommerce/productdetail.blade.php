@@ -117,11 +117,18 @@
                 </div>
                 
                 <div class="col-md-6" style="background-color: black">
-                    <h2 style="color: white;" class="mb-1 mt-2">{{ $product->title }}</h2>
+                    <h2 style="color: white;" class="mb-3 mt-2">{{ $product->title }}</h2>
                     {{-- <p>{!! $product->description !!}</p> --}}
-    
-                    <h4 class="text-danger mb-2">Price : ₹ <span id="product-price">{{ number_format($product->productFlavors->first()->sizes->first()->price ?? 0) }}</span></h4>
-    
+                    <h4 class="mb-2">
+                        <span class="text-muted" style="text-decoration: line-through;">
+                            MRP: ₹ <span id="product-mrp">{{ number_format($product->productFlavors->first()->sizes->first()->strike_price ?? 0) }}</span>
+                        </span>
+                    </h4>
+                    
+                    <h4 class="text-danger mb-2">
+                        Price: ₹ <span id="product-price">{{ number_format($product->productFlavors->first()->sizes->first()->price ?? 0) }}</span>
+                    </h4>
+
                     <h5  style="color: #ccc" class="mb-1">Select Flavor:</h5>
                     @foreach ($product->productFlavors as $index => $productFlavor)
                         <span class="flavor-tab {{ $index == 0 ? 'active' : '' }}" data-flavor="{{ $productFlavor->flavor->id }}">
@@ -139,7 +146,6 @@
                                     </span>
                                 @endforeach
                             </div>
-    
                             <p class="mt-2">Stock: <span id="stock-quantity">{{ $productFlavor->sizes->first()->qty ?? 'Out of stock' }}</span></p>
                         </div>
                     @endforeach
@@ -209,6 +215,7 @@
                     document.querySelectorAll(".size-option").forEach(s => s.classList.remove("active"));
                     this.classList.add("active");
 
+                    document.getElementById("product-mrp").innerText = parseFloat(this.dataset.strike_price).toFixed(2);
                     document.getElementById("product-price").innerText = parseFloat(this.dataset.price).toFixed(2);
                     document.getElementById("stock-quantity").innerText = this.dataset.qty;
                 });
@@ -234,5 +241,41 @@
             var firstTab = new bootstrap.Tab(document.querySelector("#productTabs .nav-link.active"));
             firstTab.show();
         });
+
+        $("#addToCartBtn").click(function () {
+            let product_id = {{ $product->id }};
+            let customer_id = {{ auth()->id() ? auth()->id() : 'null' }};
+            let flavor_id = $(".flavor-tab.active").data("flavor");
+            let size_id = $(".size-option.active").data("size");
+            let qty = $("#quantity").val();
+
+            if (customer_id === null) {
+                alert("Please login first to add products to the cart.");
+                window.location.href = "{{ route('clogin') }}"; 
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('cart.store') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    product_id: product_id,
+                    customer_id: customer_id,
+                    productflavor_id: flavor_id,
+                    productflavorsize_id: size_id,
+                    qty: qty
+                },
+                success: function(response) {
+                    alert("Product added to cart successfully!");
+                    // $(".cart-message").text("Product added to cart successfully!");
+
+                },
+                error: function(xhr) {
+                    alert("Failed to add product to cart. Please try again.");
+                }
+            });
+        });
+
     </script>
 @endsection
