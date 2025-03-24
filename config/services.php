@@ -35,8 +35,8 @@ return [
         ],
     ],
     'razorpay' => [
-        'key' => 'rzp_test_1SyJYrrBD6M4bC',
-        'secret' => 'VMUvENLFzaCTOUnniS8nxRD3', 
+        'key' => 'rzp_test_V8dTVLLCGqG1nv',
+        'secret' => 'OxMzmumc2RBEwMkPqnU32I7m', 
     ],
 
 ];

@@ -208,7 +208,12 @@ Route::middleware(['checkUser'])->group(function () {
     Route::prefix('product')->group(function(){
         Route::post('/store/{id?}', [ProductController::class, 'store'])->name('cart.store');
         Route::get('/cart', [ProductController::class, 'cartdetail'])->name('cart.detail');
-        Route::post('/cart/remove', [ProductController::class, 'clearCart'])->name('cart.remove');
+        Route::post('/remove', [ProductController::class, 'clearCart'])->name('cart.remove');
+        Route::get('/checkout', [ProductController::class, 'checkout'])->name('cart.checkout');
+        Route::post('/storeorder', [ProductController::class, 'placeOrder'])->name('payment.create');
+        Route::post('/verify-payment', [ProductController::class, 'paymentverify'])->name('payment.verifay');
+        Route::post('/purchase-product/{order_id?}', [ProductController::class, 'purchaseproduct'])->name('purchase.product');
+
 
     });
     

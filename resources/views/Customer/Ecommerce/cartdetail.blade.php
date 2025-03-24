@@ -34,9 +34,9 @@
                     <tr>
                         <th>Image</th>
                         <th>Flavor</th>
-                        <th>Size</th>
+                        <th>Weight</th>
                         <th>Price</th>
-                        <th>Quantity</th>
+                        <th>Qty</th>
                         <th>Total</th>
                         <th>Action</th>
                     </tr>
@@ -47,23 +47,22 @@
                         <td>
                             <img src="{{ Storage::url($item->product->main_image) }}" class="img-fluid img-thumbnail" width="250">
                         </td>
-                        <td>{{ $item->productFlavor->name ?? 'N/A' }}</td>
-                        <td>{{ $item->productFlavorSize->size ?? 'N/A' }}</td>
+                        <td>{{ $item->productFlavor->flavor->name ?? 'N/A' }}</td>
+                        <td>{{ $item->productFlavorSize->weight ?? 'N/A' }}</td>
                         <td>
-                            {{ $item->FlavorSize->price ?? 'N/A' }}
+                            {{ $item->productFlavorSize->price ?? 'N/A' }}
                         </td>
                         <td>
-                            <input type="number" class="form-control update-qty"
-                                   data-id="{{ $item->id }}" value="{{ $item->qty }}" min="1" style="width:80px;">
+                            <input type="number" class="form-control update-qty" data-id="{{ $item->id }}" value="{{ $item->qty }}" min="1" style="width:80px;">
                         </td>
                         <td>
-                        
+                            {{ ($item->productFlavorSize->price ?? 0) * $item->qty }}
                         </td>
                         <td>
-                            <button class="btn btn-danger btn-sm remove-item"
-                                data-product-id="{{ $item->product_id }}"
-                                data-flavor-id="{{ $item->productflavor_id }}"
-                                data-size-id="{{ $item->productflavorsize_id }}">
+                        <button class="btn btn-danger btn-sm remove-item"
+                            data-product-id="{{ $item->product_id }}"
+                            data-flavor-id="{{ $item->productflavor_id }}"
+                            data-size-id="{{ $item->productflavorsize_id }}">
                             Remove
                         </button>
                         </td>
@@ -71,6 +70,11 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="float-right">
+                <a href="{{route('cart.checkout')}}">
+                    <button class="btn btn-warning btn-sm ">Checkout</button>
+                </a>
+            </div>
         </div>
     @endif
 </div>
@@ -130,5 +134,6 @@
             });
         });
     });
+    
 </script>
 @endsection
