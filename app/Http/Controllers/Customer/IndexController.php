@@ -11,6 +11,9 @@ use App\Models\Admin\Plan;
 use App\Models\Admin\AddedPlanFeatures;
 use App\Models\Admin\Gallery;  
 use App\Models\Admin\Trainer;
+use App\Models\Customer\ProductCart;
+use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -31,8 +34,11 @@ class IndexController extends Controller
             });
             $images = Gallery::all();
             $trainers = Trainer::all();
+            $totalQty = ProductCart::where('customer_id', Auth::id())->sum('qty');
+            // dd($totalQty);
 
 
-        return view('Customer.Index.Index', compact('setting','class','plans', 'planFeatures','images','trainers'));
+
+        return view('Customer.Index.Index', compact('setting','class','plans', 'planFeatures','images','trainers','totalQty'));
     }
 }

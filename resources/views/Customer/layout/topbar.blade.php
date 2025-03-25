@@ -63,7 +63,16 @@
                             <a href="{{$setting->twitter_link}}"target="_blank"><i class="fa fa-twitter"></i></a>
                             <a href="{{$setting->youtube_link}}"target="_blank"><i class="fa fa-youtube-play"></i></a>
                             <a href="{{$setting->instagram_link}}"target="_blank"><i class="fa fa-instagram"></i></a>
-                            <a href="{{route('cart.detail')}}"><i class="fa fa-shopping-cart" style="color: white"></i></a>                                               </div>
+                            <a href="{{route('cart.detail')}}">
+                                <i class="fa fa-shopping-cart" style="color: white;" ></i>
+                                <sup id="cart_items_no" style="color:red;width: 18px;height: 18px;line-height: 17px;display: inline-block;background: #e82954;text-align: center;	    border-radius: 50%;position: relative;top: -12px;color: #fff;font-size: 12px;left: -7px;">
+                                    @if ($totalQty > 0)
+                                    <span class="cart-badge " style="color:white">{{ $totalQty }}</span>
+                                @endif
+                                </sup>
+                               
+                            </a>                                              
+                         </div>
                     </div>
                 </div>
             </div>

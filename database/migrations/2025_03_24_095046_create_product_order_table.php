@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->string('order_no', 191)->unique();
             $table->string('razorpay_order_id')->nullable();
-            $table->string('payment_id')->nullable();
+            $table->string('razorpay_payment_id')->nullable();
             $table->string('razorpay_signature')->nullable();
             $table->enum('payment_status', ['pending', 'paid', 'failed'])->default('pending');
             $table->timestamps();

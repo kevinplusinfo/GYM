@@ -27,6 +27,9 @@
 
     @if($cartItems->isEmpty())
         <p class="text-center">Your cart is empty.</p>
+        <a href="{{route('product')}}">
+            <p class="text-center">Keep Shoping</p>
+        </a >
     @else
         <div class="table-responsive">
             <table class="table table-bordered text-center">
@@ -70,9 +73,9 @@
                     @endforeach
                 </tbody>
             </table>
-            <div class="float-right">
+            <div class="float-right mb-2">
                 <a href="{{route('cart.checkout')}}">
-                    <button class="btn btn-warning btn-sm ">Checkout</button>
+                    <button class="btn btn-warning ">Checkout</button>
                 </a>
             </div>
         </div>

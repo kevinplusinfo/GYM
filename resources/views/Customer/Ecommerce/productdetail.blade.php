@@ -157,7 +157,7 @@
     
                     <div class="mt-4 d-flex align-items-center gap-3">
                         <button class="btn btn-cart flex-grow-1 btn-primary" id="addToCartBtn">Add to Cart</button>
-                        <button class="btn btn-buy flex-grow-1 ml-2">Buy Now</button>
+                        <button class="btn btn-buy flex-grow-1 ml-2" id="buyNowBtn">Buy Now</button>
                     </div>
                 </div>
             </div>
@@ -242,7 +242,7 @@
             firstTab.show();
         });
 
-        $("#addToCartBtn").click(function () {
+        $("#addToCartBtn, #buyNowBtn").click(function () {
             let product_id = {{ $product->id }};
             let customer_id = {{ auth()->id() ? auth()->id() : 'null' }};
             let flavor_id = $(".flavor-tab.active").data("flavor");
@@ -254,6 +254,7 @@
                 window.location.href = "{{ route('clogin') }}"; 
                 return;
             }
+            let isBuyNow = $(this).attr("id") === "buyNowBtn"; 
 
             $.ajax({
                 url: "{{ route('cart.store') }}",
@@ -264,11 +265,15 @@
                     customer_id: customer_id,
                     productflavor_id: flavor_id,
                     productflavorsize_id: size_id,
-                    qty: qty
+                    qty: qty,
+                    buy_now: isBuyNow
                 },
                 success: function(response) {
-                    alert("Product added to cart successfully!");
-                    // $(".cart-message").text("Product added to cart successfully!");
+                    if (isBuyNow) {  
+                        window.location.href = "{{ route('cart.checkout') }}";
+                    }else{
+                        alert("Product added to cart successfully!");
+                    }
 
                 },
                 error: function(xhr) {

@@ -20,7 +20,7 @@
         "key": "{{ $key }}",
         "amount": "{{ $amount }}", 
         "currency": "INR",
-        "name": "Your Company Name",
+        "name": "KVN'S GYM",
         "description": "Purchase {{ $plan->name }} Plan",
         "image": "{{ asset('assets/img/logo.png') }}",
         "order_id": "{{ $order_id }}",

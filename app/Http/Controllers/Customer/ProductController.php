@@ -59,6 +59,11 @@ class ProductController extends Controller
                 'qty' => $request->qty
             ]);
         }
+        if ($request->buy_now) {
+            return response()->json([
+                'redirect_url' => route('cart.checkout')
+            ]);
+        }
 
         return response()->json([
             'message' => 'Cart updated successfully!',
@@ -174,7 +179,7 @@ class ProductController extends Controller
             $orderItem->product_flavor_id = $item->productflavor_id;
             $orderItem->product_flavor_size_id = $item->productflavorsize_id;
             $orderItem->qty = $item->qty;
-            $orderItem->total_price = $item->qty * $item->product->price;
+            $orderItem->total_price = $item->qty * $item->productFlavorSize->price;
             $orderItem->save();
 
             $productFlavorSize = ProductFlavorSize::find($item->productflavorsize_id);
@@ -219,24 +224,27 @@ class ProductController extends Controller
                 ->with('success', 'Payment successful!');
 
         } catch (\Exception $e) {
+            dd(123);
             return redirect()->route('product')->with('error', 'Payment failed! ' . $e->getMessage());
         }
     }
 
     public function purchaseproduct($order_id)
     {
-        dd(123);
+        // dd(123);
         $orders = Product_Order::where('id', $order_id)
-            ->with([
-                'orderItems' => function ($query) {
-                    $query->select('id', 'product_order_id', 'product_id', 'product_flavor_id', 'product_flavor_size_id', 'quantity', 'price');
-                },
-                'orderItems.product:id,main_image,name',
-                'orderItems.productFlavor.flavor:id,name',
-                'orderItems.productFlavorSize:id,weight,price'
-            ])
-            ->get();
+        ->with([
+            'orderItems' => function ($query) {
+                $query->select('id', 'order_id', 'product_id', 'product_flavor_id', 'product_flavor_size_id', 'qty', 'total_price');
+            },
+            'orderItems.product:id,main_image,title',
+            'orderItems.productFlavor.flavor:id,name',
+            'orderItems.productFlavorSize:id,weight,price'
+        ])
+        ->get();
+            // dd($orders);
             return view('Customer.Ecommerce.orderditem',compact('orders'));
     
     }
+
 } 

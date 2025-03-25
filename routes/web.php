@@ -90,8 +90,8 @@ use App\Http\Controllers\Customer\ProductController;
                 Route::get('/', [AdminPlanController::class, 'plan'])->name('plan.plan');
                 Route::get('/form', [AdminPlanController::class, 'form'])->name('plan.form');
                 Route::get('/form/{id}', [AdminPlanController::class, 'form'])->name('plan.update');
-                Route::post('/add', [AdminPlanController::class, 'add'])->name('plan.add');
-                // Route::post('/add/{id?}', [AdminPlanController::class, 'add'])->name('plan.add');
+                // Route::post('/add', [AdminPlanController::class, 'add'])->name('plan.add');
+                Route::post('/add/{id?}', [AdminPlanController::class, 'add'])->name('plan.add');
                 Route::get('/delete/{id?}', [AdminPlanController::class, 'delete'])->name('plan.delete');
 
 
@@ -212,7 +212,7 @@ Route::middleware(['checkUser'])->group(function () {
         Route::get('/checkout', [ProductController::class, 'checkout'])->name('cart.checkout');
         Route::post('/storeorder', [ProductController::class, 'placeOrder'])->name('payment.create');
         Route::post('/verify-payment', [ProductController::class, 'paymentverify'])->name('payment.verifay');
-        Route::post('/purchase-product/{order_id?}', [ProductController::class, 'purchaseproduct'])->name('purchase.product');
+        Route::get('/purchase-product/{order_id?}', [ProductController::class, 'purchaseproduct'])->name('purchase.product');
 
 
     });
