@@ -64,9 +64,10 @@
                             </tr>
                         </thead>
                         <tbody>
+                           
                             @foreach($products as $key => $product)
                             <tr>
-                                <td>{{ $key + 1 }}</td>
+                                <td>{{$key + 1 }}</td>
                                 <td>
                                     @if($product->images->isNotEmpty())
                                         <img src="{{ Storage::url($product->main_image) }}" alt="Product Image" width="50">
@@ -98,6 +99,7 @@
 <script>
     $(".sidebar .nav-link").removeClass('active');
     $(".ecom-link").addClass('active');
+    $(".product-link").addClass('active');
     $(".category-menu").addClass('menu-open');
 
 </script>

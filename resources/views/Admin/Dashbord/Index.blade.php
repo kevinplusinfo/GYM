@@ -40,26 +40,25 @@
                             <p>Total User</p>
                         </div>
                         <div class="icon">
-                            <i class="ion ion-bag"></i>
+                            <i class="ion ion-person-add"></i>
                         </div>
                         <a href="{{route('admin.user')}}" class="small-box-footer">More info 
                             <i  class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
-
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-success">
                         <div class="inner">
-                            <h3 ><sup style="font-size: 20px"></sup></h3>
-                            <p>This Month</p>
+                            <h3>{{$trainer}}</h3>
+                            <p>Total Trainer</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-stats-bars"></i>
                         </div>
-                        <a href="#"  class=" small-box-footer">More info 
-                            <i class="fas fa-arrow-circle-right"></i>
-                        </a>
+                        <a href="{{route('trainer.index')}}" class="small-box-footer">More info
+                            <i name="Today" class="fa-solid fa-arrow-circle-down"></i>
+                         </a>
                     </div>
                 </div>
 
@@ -70,7 +69,7 @@
                             <p>This Week</p>
                         </div>
                         <div class="icon">
-                            <i class="ion ion-person-add"></i>
+                            <i class="ion ion-bag"></i>
                         </div>
                         <a href="#"  class="small-box-footer">More info 
                             <i name="Week" class="fas fa-arrow-circle-right"></i>
@@ -97,30 +96,30 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>{{$trainer}}</h3>
-                            <p>Total Trainer</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fa-solid fa-cart-shopping "></i>
-                        </div>
-                        <a href="{{route('trainer.index')}}" class="small-box-footer">More info
-                            <i name="Today" class="fa-solid fa-arrow-circle-down"></i>
-                         </a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
                     <div class="small-box bg-info">
                         <div class="inner">
-                            <h3></h3>
+                            <h3>{{$cart_qty}}</h3>
                             <p> Cart Qty</p>
                         </div>
                         <div class="icon">
                             <i class="fa-solid fa-cart-arrow-down"></i>
                         </div>
-                        <a href="cart.php" class="small-box-footer">More info
+                        <a href="{{route('ecom.cart')}}" class="small-box-footer">More info
                             <i name="Today" class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{$order}}</h3>
+                            <p>Total Order</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa-solid fa-cart-shopping "></i>
+                        </div>
+                        <a href="{{route('ecom.orders')}}"  class=" small-box-footer">More info 
+                            <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>

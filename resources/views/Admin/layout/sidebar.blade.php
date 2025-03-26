@@ -70,19 +70,25 @@
 					</a>
 					<ul class="nav nav-treeview" style="display: none;">
 					  <li class="nav-item">
-						<a href="{{route('ecom.product')}}" class="nav-link ecom-link product-link ">
+						<a href="{{route('ecom.product')}}" class="nav-link  product-link ">
 						  <i class="far fa-circle nav-icon"></i>
 						  <p>Product</p>
 						</a>
 					  </li>
 					  <li class="nav-item">
-						<a href="#" class="nav-link">
+						<a href="{{route('ecom.orders')}}" class="nav-link order-link">
 						  <i class="far fa-circle nav-icon"></i>
 						  <p>Order</p>
 						</a>
 					  </li>
 					  <li class="nav-item">
-						<a href="{{route('flavors.index')}}" class="nav-link">
+						<a href="{{route('ecom.cart')}}" class="nav-link cart-link">
+						  <i class="far fa-circle nav-icon"></i>
+						  <p>Cart</p>
+						</a>
+					  </li>
+					  <li class="nav-item">
+						<a href="{{route('flavors.index')}}" class="nav-link flavor-link">
 						  <i class="far fa-circle nav-icon"></i>
 						  <p>Flavore</p>
 						</a>

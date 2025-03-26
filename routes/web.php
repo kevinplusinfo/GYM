@@ -52,6 +52,11 @@ use App\Http\Controllers\Customer\ProductController;
             Route::prefix('ecom')->group(function() {
                 Route::get('/', [EcomController::class, 'index'])->name('ecom.product');
                 Route::get('/form', [EcomController::class, 'form'])->name('ecom.product.form');
+                Route::get('/orders', [EcomController::class, 'orders'])->name('ecom.orders');
+                Route::get('/details', [EcomController::class, 'getOrderDetails'])->name('ecom.getOrderDetails');
+                Route::get('/cart', [EcomController::class, 'cartdetail'])->name('ecom.cart');
+                Route::get('cart/details', [EcomController::class, 'getCartDetails'])->name('admin.cart.details');
+                
 
                 Route::prefix('flavor')->group(function() { 
                     Route::get('/flavors', [AdminFlavorController::class, 'index'])->name('flavors.index');
@@ -125,8 +130,6 @@ use App\Http\Controllers\Customer\ProductController;
                 
             });
             
-
-
             Route::prefix('trainer')->group(function(){
                 Route::get('/', [AdminTeamController::class, 'index'])->name('trainer.index');
                 Route::get('/form', [AdminTeamController::class, 'form'])->name('trainer.form');

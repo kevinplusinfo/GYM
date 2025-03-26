@@ -37,6 +37,10 @@ class ProductCart extends Model
     {
         return $this->belongsTo(ProductFlavorSize::class, 'productflavorsize_id');
     }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id', 'id'); // Adjust if the customer model is different
+    }
 
 }
     

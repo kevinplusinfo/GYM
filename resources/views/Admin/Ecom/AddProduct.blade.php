@@ -430,6 +430,7 @@ $(document).ready(function () {
 
     $(".sidebar .nav-link").removeClass('active');
     $(".ecom-link").addClass('active');
+    $(".product-link").addClass('active');
     $(".category-menu").addClass('menu-open');
 
 });

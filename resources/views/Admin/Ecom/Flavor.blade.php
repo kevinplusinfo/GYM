@@ -81,6 +81,7 @@
      $(document).ready(function(){
         $(".sidebar .nav-link").removeClass('active');
         $(".ecom-link").addClass('active');
+        $(".flavor-link").addClass('active');
     });
 </script>
 @endsection

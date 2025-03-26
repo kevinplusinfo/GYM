@@ -73,7 +73,7 @@ class ProductController extends Controller
     
     public function cartdetail()
     {
-        $customer_id = auth()->id();
+        $customer_id =   $customer_id = Auth::id();
 
         if (!$customer_id) {
             return redirect()->route('clogin')->with('error', 'Please login to view your cart.');
@@ -95,7 +95,7 @@ class ProductController extends Controller
     public function clearCart(Request $request )
     {
 
-            $deleted = ProductCart::where('customer_id', auth()->id())
+            $deleted = ProductCart::where('customer_id', Auth::id())
             ->where('product_id', $request->product_id)
             ->where('productflavor_id', $request->productflavor_id)
             ->where('productflavorsize_id', $request->productflavorsize_id)
@@ -109,7 +109,7 @@ class ProductController extends Controller
     }
 
     public function checkout(){
-        $customer_id = auth()->id();
+        $customer_id = Auth::id();
 
         if (!$customer_id) {
             return redirect()->route('clogin')->with('error', 'Please login to view your cart.');
@@ -231,7 +231,6 @@ class ProductController extends Controller
 
     public function purchaseproduct($order_id)
     {
-        // dd(123);
         $orders = Product_Order::where('id', $order_id)
         ->with([
             'orderItems' => function ($query) {
