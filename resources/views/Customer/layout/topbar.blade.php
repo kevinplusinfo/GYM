@@ -70,7 +70,6 @@
                                     <span class="cart-badge " style="color:white">{{ $totalQty }}</span>
                                 @endif
                                 </sup>
-                               
                             </a>                                              
                          </div>
                     </div>

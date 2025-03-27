@@ -263,8 +263,7 @@ class EcomController extends Controller
             return response()->json(['error' => 'No items found for this order'], 404);
         }
         $html .= "<h5>Order Items:</h5>
-                  <table class='table table-bordered'>
-                      <thead>
+                  <table class='table table-striped'>
                           <tr>
                               <th>Image</th>
                               <th>Product</th>
@@ -274,8 +273,7 @@ class EcomController extends Controller
                               <th>Qty</th>
                               <th>Total</th>
                           </tr>
-                      </thead>
-                      <tbody>";
+                    ";
     
                       foreach ($order->orderItems as $item) {
                         $imagePath = $item->product->main_image ?? 'default.jpg'; 
@@ -292,7 +290,7 @@ class EcomController extends Controller
                                   </tr>";
                     }
                     $totalPrice = $order->orderItems->sum('total_price');
-                    $html .= "</tbody></table><div style='text-align: right; font-weight: bold; margin-top: 10px;'>
+                    $html .= "</table><div style='text-align: right; font-weight: bold; margin-top: 10px;'>
                                 <strong>Total Amount:</strong> ₹" . number_format($totalPrice) . "
                             </div>";
     
@@ -312,80 +310,78 @@ class EcomController extends Controller
     }
 
     public function getCartDetails(Request $request)
-{
-    $cartItems = ProductCart::with([
-        'customer:id,name,email,mno',
-        'product:id,main_image,title',
-        'productFlavor.flavor:id,name',
-        'productFlavorSize:id,weight,price'
-    ])->where('customer_id', $request->customer_id)->get();
+    {
+        $cartItems = ProductCart::with([
+            'customer:id,name,email,mno',
+            'product:id,main_image,title',
+            'productFlavor.flavor:id,name',
+            'productFlavorSize:id,weight,price'
+        ])->where('customer_id', $request->customer_id)->get();
 
-    if ($cartItems->isEmpty()) {
-        return response()->json(['error' => 'No items found in the cart'], 404);
-    }
+        if ($cartItems->isEmpty()) {
+            return response()->json(['error' => 'No items found in the cart'], 404);
+        }
 
-    $customer = $cartItems->first()->customer;
-    $totalQty = 0;
-    $grandTotal = 0;
+        $customer = $cartItems->first()->customer;
+        $totalQty = 0;
+        $grandTotal = 0;
 
-    $html = "<p><b>Customer:</b> {$customer->name}</p>
-            <p><b>Email:</b> {$customer->email}</p>
-            <p><b>Phone:</b> {$customer->mno}</p>";
+        $html = "<p><b>Customer:</b> {$customer->name}</p>
+                <p><b>Email:</b> {$customer->email}</p>
+                <p><b>Phone:</b> {$customer->mno}</p>";
 
-    $html .= "<h5>Cart Summary:</h5>
-        <table class='table table-bordered'>
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Product</th>
-                    <th>Flavor</th>
-                    <th>Size</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total Price</th>
-                </tr>
-            </thead>
-            <tbody>";
+        $html .= "<h5>Cart Summary:</h5>
+            <table class='table table-bordered'>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Flavor</th>
+                        <th>Size</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>";
 
-    foreach ($cartItems as $cartItem) {
-        $imagePath = $cartItem->product->main_image ?? 'default.jpg';
-        $imageUrl = Storage::url($imagePath);
+        foreach ($cartItems as $cartItem) {
+            $imagePath = $cartItem->product->main_image ?? 'default.jpg';
+            $imageUrl = Storage::url($imagePath);
 
-        $itemTotal = $cartItem->productFlavorSize->price * $cartItem->qty;
-        $grandTotal += $itemTotal;
-        $totalQty += $cartItem->qty;
+            $itemTotal = $cartItem->productFlavorSize->price * $cartItem->qty;
+            $grandTotal += $itemTotal;
+            $totalQty += $cartItem->qty;
+
+            $html .= "<tr>
+                        <td><img src='{$imageUrl}' width='50' height='50' alt='Product Image'></td>
+                        <td>{$cartItem->product->title}</td>
+                        <td>{$cartItem->productFlavor->flavor->name}</td>
+                        <td>{$cartItem->productFlavorSize->weight}g</td>
+                        <td>{$cartItem->qty}</td>
+                        <td>{$cartItem->productFlavorSize->price}</td>
+                        <td>₹" . number_format($itemTotal, 2) . "</td>
+                    </tr>";
+        }
 
         $html .= "<tr>
-                    <td><img src='{$imageUrl}' width='50' height='50' alt='Product Image'></td>
-                    <td>{$cartItem->product->title}</td>
-                    <td>{$cartItem->productFlavor->flavor->name}</td>
-                    <td>{$cartItem->productFlavorSize->weight}g</td>
-                    <td>{$cartItem->qty}</td>
-                    <td>{$cartItem->productFlavorSize->price}</td>
-                    <td>₹" . number_format($itemTotal, 2) . "</td>
+                    <td colspan='4' style='text-align:right; font-weight:bold;'>Total Quantity:</td>
+                    <td style='font-weight:bold;'>{$totalQty}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                <td></td>
+                    <td colspan='5' style='text-align:right; font-weight:bold;'>Grand Total:</td>
+                    <td style='font-weight:bold;'>₹" . number_format($grandTotal, 2) . "</td>
+                
                 </tr>";
+
+        $html .= "</tbody></table>";
+
+        return response()->json(['html' => $html]);
     }
-
-    $html .= "<tr>
-                <td colspan='4' style='text-align:right; font-weight:bold;'>Total Quantity:</td>
-                <td style='font-weight:bold;'>{$totalQty}</td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-               <td></td>
-                <td colspan='5' style='text-align:right; font-weight:bold;'>Grand Total:</td>
-                <td style='font-weight:bold;'>₹" . number_format($grandTotal, 2) . "</td>
-               
-              </tr>";
-
-    $html .= "</tbody></table>";
-
-    return response()->json(['html' => $html]);
-}
-
     
-
 }    
 
 

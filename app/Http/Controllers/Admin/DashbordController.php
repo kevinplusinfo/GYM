@@ -17,7 +17,7 @@ class DashbordController extends Controller
     public function index(){
         $trainer = Trainer::count();
         $order = Product_order::count();
-        $cart_qty = ProductCart::count();
+        $cart_qty = ProductCart::sum('qty');
         $user = Customer::count();
 
         return view('Admin.Dashbord.Index',compact('trainer','order','cart_qty','user'));
