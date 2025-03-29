@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EcomController;
 use App\Http\Controllers\Admin\AdminFlavorController;
 use App\Http\Controllers\Admin\AdminFeedbackController;
+use App\Http\Controllers\Admin\AdminAppointmentController;
 
 #customer
 use App\Http\Controllers\Customer\GalleryController;
@@ -147,6 +148,10 @@ use App\Http\Controllers\Customer\HealthPlanController;
 
             Route::prefix('feedback')->group(function(){
                 Route::get('/', [AdminFeedbackController::class, 'index'])->name('userfeedback');
+            });
+
+            Route::prefix('appointment')->group(function(){
+                Route::get('/', [AdminAppointmentController::class, 'index'])->name('appointment.index');
             });
         });
     });

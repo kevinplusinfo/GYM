@@ -152,6 +152,14 @@
 					</a>
 				</li>
 				<li class="nav-item">
+					<a href="{{route('appointment.index')}}" class="nav-link  appointment-link">
+						<i class="fa-solid fa-handshake-simple nav-icon"></i>
+						<p>
+							Appointment
+						</p>
+					</a>
+				</li>
+				<li class="nav-item">
 					<a href="{{route('userfeedback')}}" class="nav-link  feedback-link">
 						<i class="fa-solid fa-star nav-icon"></i>
 						<p>
