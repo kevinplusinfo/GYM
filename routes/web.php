@@ -14,12 +14,7 @@ use App\Http\Controllers\Admin\DashbordController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EcomController;
 use App\Http\Controllers\Admin\AdminFlavorController;
-
-
 use App\Http\Controllers\Admin\AdminFeedbackController;
-
-
-
 
 #customer
 use App\Http\Controllers\Customer\GalleryController;
@@ -35,7 +30,7 @@ use App\Http\Controllers\Customer\TrainerController;
 use App\Http\Controllers\Customer\FeedbackController;
 use App\Http\Controllers\Customer\CustomerAuthController;
 use App\Http\Controllers\Customer\ProductController;
-
+use App\Http\Controllers\Customer\HealthPlanController;
 
 
 
@@ -49,6 +44,7 @@ use App\Http\Controllers\Customer\ProductController;
             Route::prefix('dashbord')->group(function(){
                 Route::get('/', [DashbordController::class, 'index'])->name('dashbord');
             });
+
             Route::prefix('ecom')->group(function() {
                 Route::get('/', [EcomController::class, 'index'])->name('ecom.product');
                 Route::get('/form', [EcomController::class, 'form'])->name('ecom.product.form');
@@ -57,7 +53,6 @@ use App\Http\Controllers\Customer\ProductController;
                 Route::get('/cart', [EcomController::class, 'cartdetail'])->name('ecom.cart');
                 Route::get('cart/details', [EcomController::class, 'getCartDetails'])->name('admin.cart.details');
                 
-
                 Route::prefix('flavor')->group(function() { 
                     Route::get('/flavors', [AdminFlavorController::class, 'index'])->name('flavors.index');
                     Route::get('/form/{id?}', [AdminFlavorController::class, 'form'])->name('flavors.form');
@@ -66,9 +61,7 @@ use App\Http\Controllers\Customer\ProductController;
                 });
 
             });
-
-            
-            
+    
             Route::prefix('user')->group(function(){
                 Route::get('/', [UserController::class, 'index'])->name('admin.user');
             });
@@ -158,68 +151,69 @@ use App\Http\Controllers\Customer\ProductController;
         });
     });
 
-Route::get('/', [IndexController::class, 'index'])->name('index.gallery');
-Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
-Route::get('/blog', [BlogController::class, 'index'])->name('blog');
-Route::get('/plan', [PlanController::class, 'index'])->name('plan');
-Route::get('/contact-as', [PagesController::class, 'contact'])->name('contact');
-Route::get('/add-contact', [PagesController::class, 'addcontact'])->name('add.contact');
-Route::get('/class', [ClassController::class, 'class'])->name('class');
-Route::get('/class/{id}', [ClassController::class, 'detail'])->name('class.detail');
-Route::get('/team', [TrainerController::class, 'index'])->name('team');
-Route::get('/about-as', [PagesController::class, 'about'])->name('about');
-Route::get('/services', [PagesController::class, 'services'])->name('services');
-Route::get('/timetable', [PagesController::class, 'timetable'])->name('timetable');
+    Route::get('/', [IndexController::class, 'index'])->name('index.gallery');
+    Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
+    Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+    Route::get('/plan', [PlanController::class, 'index'])->name('plan');
+    Route::get('/contact-as', [PagesController::class, 'contact'])->name('contact');
+    Route::get('/add-contact', [PagesController::class, 'addcontact'])->name('add.contact');
+    Route::get('/class', [ClassController::class, 'class'])->name('class');
+    Route::get('/class/{id}', [ClassController::class, 'detail'])->name('class.detail');
+    Route::get('/team', [TrainerController::class, 'index'])->name('team');
+    Route::get('/about-as', [PagesController::class, 'about'])->name('about');
+    Route::get('/services', [PagesController::class, 'services'])->name('services');
+    Route::get('/timetable', [PagesController::class, 'timetable'])->name('timetable');
 
-
-Route::prefix('product')->group(function(){
-    Route::get('/', [ProductController::class, 'index'])->name('product');
-    Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('detail');
-});
-
-
-
-
-// Authentication Routes
-Route::get('clogin', [AuthController::class, 'showLoginForm'])->name('clogin');
-Route::post('clogin', [AuthController::class, 'login'])->name('slogin');
-Route::get('register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('register', [AuthController::class, 'register']);
-Route::post('logout', [AuthController::class, 'logout'])->name('clogout');
-
-Route::middleware(['checkUser'])->group(function () {
-    Route::get('appointment', [AppointmentController::class, 'appointment'])->name('appointment');
-    Route::post('store', [AppointmentController::class, 'store'])->name('appointment.store');
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-
-    Route::prefix('feedback')->group(function(){
-        Route::get('/', [FeedbackController::class, 'index'])->name('feedback');
-        Route::post('/store', [FeedbackController::class, 'store'])->name('feedback.store');
-    });
-
-
-    Route::prefix('plan')->group(function () {
-        Route::get('/plans', [PlanController::class, 'index'])->name('customer.plans.index');
-        Route::get('/checkout/{id}', [PlanController::class, 'checkout'])->name('customer.checkout');
-        Route::post('/payment', [PlanController::class, 'createOrder'])->name('customer.payment.create');
-        Route::post('/store-order', [PlanController::class, 'store'])->name('customer.payment.store');
-        Route::post('/verify-payment', [PlanController::class, 'verifyPayment'])->name('customer.payment.verify'); 
-        Route::get('/order/{order_id}', [PlanController::class, 'purchaseplan'])->name('customer.purchase.plan'); 
-    });
 
     Route::prefix('product')->group(function(){
-        Route::post('/store/{id?}', [ProductController::class, 'store'])->name('cart.store');
-        Route::get('/cart', [ProductController::class, 'cartdetail'])->name('cart.detail');
-        Route::post('/remove', [ProductController::class, 'clearCart'])->name('cart.remove');
-        Route::get('/checkout', [ProductController::class, 'checkout'])->name('cart.checkout');
-        Route::post('/storeorder', [ProductController::class, 'placeOrder'])->name('payment.create');
-        Route::post('/verify-payment', [ProductController::class, 'paymentverify'])->name('payment.verifay');
-        Route::get('/purchase-product/{order_id?}', [ProductController::class, 'purchaseproduct'])->name('purchase.product');
+        Route::get('/', [ProductController::class, 'index'])->name('product');
+        Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('detail');
+    });
 
+    // Authentication Routes
+    Route::get('clogin', [AuthController::class, 'showLoginForm'])->name('clogin');
+    Route::post('clogin', [AuthController::class, 'login'])->name('slogin');
+    Route::get('register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('logout', [AuthController::class, 'logout'])->name('clogout');
+
+    Route::middleware(['checkUser'])->group(function () {
+        Route::get('appointment', [AppointmentController::class, 'appointment'])->name('appointment');
+        Route::post('store', [AppointmentController::class, 'store'])->name('appointment.store');
+        Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+        Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
+        Route::prefix('feedback')->group(function(){
+            Route::get('/', [FeedbackController::class, 'index'])->name('feedback');
+            Route::post('/store', [FeedbackController::class, 'store'])->name('feedback.store');
+        });
+
+        Route::prefix('plan')->group(function () {
+            Route::get('/plans', [PlanController::class, 'index'])->name('customer.plans.index');
+            Route::get('/checkout/{id}', [PlanController::class, 'checkout'])->name('customer.checkout');
+            Route::post('/payment', [PlanController::class, 'createOrder'])->name('customer.payment.create');
+            Route::post('/store-order', [PlanController::class, 'store'])->name('customer.payment.store');
+            Route::post('/verify-payment', [PlanController::class, 'verifyPayment'])->name('customer.payment.verify'); 
+            Route::get('/order/{order_id}', [PlanController::class, 'purchaseplan'])->name('customer.purchase.plan'); 
+        });
+
+        Route::prefix('product')->group(function(){
+            Route::post('/store/{id?}', [ProductController::class, 'store'])->name('cart.store');
+            Route::get('/cart', [ProductController::class, 'cartdetail'])->name('cart.detail');
+            Route::post('/remove', [ProductController::class, 'clearCart'])->name('cart.remove');
+            Route::get('/checkout', [ProductController::class, 'checkout'])->name('cart.checkout');
+            Route::post('/storeorder', [ProductController::class, 'placeOrder'])->name('payment.create');
+            Route::post('/verify-payment', [ProductController::class, 'paymentverify'])->name('payment.verifay');
+            Route::get('/purchase-product/{order_id?}', [ProductController::class, 'purchaseproduct'])->name('purchase.product');
+        });
+
+        Route::prefix('health')->group(function(){
+            Route::get('/health', [HealthPlanController::class, 'index'])->name('health.form');
+            Route::post('/generate-health-plan', [HealthPlanController::class, 'generatePlan'])->name('generate.health.plan');
+            Route::post('/select-health-plan', [HealthPlanController::class, 'selectPlan'])->name('select.health.plan');
+            Route::get('/plans/{id}', [HealthPlanController::class, 'show'])->name('plans.show');
+
+            
+        });
 
     });
-    
-
-});
-

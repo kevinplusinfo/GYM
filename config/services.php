@@ -38,5 +38,10 @@ return [
         'key' => 'rzp_test_V8dTVLLCGqG1nv',
         'secret' => 'OxMzmumc2RBEwMkPqnU32I7m', 
     ],
+    
+    'google_ai' => [
+        'key' => env('GOOGLE_AI_API_KEY'),
+    ],
+    
 
 ];
