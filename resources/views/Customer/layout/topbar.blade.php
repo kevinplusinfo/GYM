@@ -47,6 +47,9 @@
                                 <li>
                                     <li><a href="{{route('feedback')}}">Feedback</a></li>
                                 </li>
+                                <li>
+                                    <li><a href="{{route('health.form')}}">Diet Plan</a></li>
+                                </li>
                             @else
                                 <li><a href="{{ route('clogin') }}">Login</a></li>
                             @endif

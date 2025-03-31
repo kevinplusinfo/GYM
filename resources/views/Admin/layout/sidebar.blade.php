@@ -181,86 +181,11 @@
 				<li class="nav-item">
 					<a href="{{route('setting')}}" class="nav-link  setting-link">
 						<i class="fa-solid fa-gear nav-icon "></i> 
-						{{-- fa-spin --}}
 						<p>
 							Settings
 						</p>
 					</a>
 				</li>
-
-				{{-- <li class="nav-item">
-					<a href="" class="nav-link  medicine-link" >
-						<i class=" nav-icon fa-sharp-duotone fa-solid fa-capsules"></i>&nbsp;
-						<p>
-							Medicine
-						</p>
-					</a>
-				</li>
-				<li class="nav-item">
-					<a href="" class="nav-link  img-link" >
-						<i class=" nav-icon fa-sharp-duotone fa-solid fa-capsules"></i>&nbsp;
-						<p>
-							Img
-						</p>
-					</a>
-				</li> --}}
-
-				<!-- <li class="nav-item">
-					<a href="" class="nav-link group-link">
-					<i class="nav-icon fas fa-layer-group"></i>
-						<p>
-							Groups
-						</p>
-					</a>
-				</li>
-				<li class="nav-item category-menu">
-					<a href="javascript:void(0);" class="nav-link">
-						<i class="nav-icon fas fa-th"></i>
-						<p>
-							Categories
-							<i class="right fas fa-angle-left"></i>
-						</p>
-					</a>
-					<ul class="nav nav-treeview">
-						<li class="nav-item">
-							<a href="" class="nav-link category-link">
-								<i class="far fa-circle nav-icon"></i>
-								<p>Category</p>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a href="" class="nav-link sub-category-link">
-								<i class="far fa-circle nav-icon"></i>
-								<p>Sub Category</p>
-							</a>
-						</li>
-					</ul>
-				</li>
-				<li class="nav-item">
-					<a href="" class="nav-link exams-link">
-						<i class="nav-icon fas fa-graduation-cap"></i>
-						<p>
-							Exams
-						</p>
-					</a>
-				</li>
-				<li class="nav-item">
-					<a href="" class="nav-link coupon-link">
-						<i class="nav-icon fas fa-percentage"></i>
-						<p>
-							Coupon
-						</p>
-					</a>
-				</li>
-			
-				<li class="nav-item">
-					<a href="" class="nav-link">
-					<i class="nav-icon fas fa-sign-out-alt"></i>
-						<p>
-							Logout
-						</p>
-					</a>
-				</li> -->
 			</ul>
 		</nav>
     </div>

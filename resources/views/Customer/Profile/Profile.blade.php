@@ -48,13 +48,17 @@
                                 </div>
                             </div>
         
-                            @if(!is_null($order))
-                                <div class="mt-3 text-center">
+                            <div class="mt-3 d-flex justify-content-center gap-3 mt-5">
+                                @if(!is_null($order))
                                     <a href="{{ route('customer.purchase.plan', ['order_id' => $order->id] ) }}" class="btn btn-warning">
-                                        Courent Purchase Plan
+                                        Current Purchase Plan
                                     </a>
-                                </div>
-                            @endif
+                                @endif
+                                <a href="{{ route('show.selected.plan') }}" class="btn btn-warning ml-3">
+                                    Current Diet & Workout Plan
+                                </a>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
