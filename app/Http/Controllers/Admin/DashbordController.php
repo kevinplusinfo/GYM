@@ -8,6 +8,8 @@ use App\Models\Admin\Trainer;
 use App\Models\Customer\Customer;
 use App\Models\Customer\Product_order;
 use App\Models\Customer\ProductCart;
+use App\Models\Customer\Order;
+
 
 
 
@@ -19,8 +21,9 @@ class DashbordController extends Controller
         $order = Product_order::count();
         $cart_qty = ProductCart::sum('qty');
         $user = Customer::count();
+        $plan = Order::count();
 
-        return view('Admin.Dashbord.Index',compact('trainer','order','cart_qty','user'));
+        return view('Admin.Dashbord.Index',compact('trainer','order','cart_qty','user','plan'));
     }
 
 }

@@ -8,8 +8,14 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminTeamController extends Controller
 {
-    public function index(){
-        $trainers = Trainer::all();
+    public function index(Request $request){
+        $trainers = Trainer::query();
+
+    if ($request->has('name') && !empty($request->name)) {
+        $trainers->where('name', 'like', '%' . $request->name . '%');
+    }
+
+    $trainers = $trainers->get(); 
         return view('Admin.Trainer.Index', compact('trainers'));
     }
 

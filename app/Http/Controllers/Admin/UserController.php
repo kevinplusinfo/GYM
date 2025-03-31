@@ -8,8 +8,17 @@ use App\Models\Customer\Customer;
 
 class UserController extends Controller
 {
-    public function index(){
-        $user = Customer::get();
-        return view('Admin.User.Index',compact('user'));
+    public function index(Request $request)
+    {
+        $query = Customer::query();
+
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        $user = $query->get(); 
+
+        return view('Admin.User.Index', compact('user'));
     }
+
 }

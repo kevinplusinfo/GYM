@@ -95,6 +95,14 @@
 					  </li>
 					</ul>
 				  </li>
+				  <li class="nav-item">
+					<a href="{{route('purchaseplan.index')}}" class="nav-link  purchaseplan-link">
+						<i class="fa-solid fa-users nav-icon"></i>
+						<p>
+							Purchase Plan
+						</p>
+					</a>
+				</li>
 				<li class="nav-item">
 					<a href="{{route('admin.user')}}" class="nav-link  user-link">
 						<i class="fa-solid fa-users nav-icon"></i>

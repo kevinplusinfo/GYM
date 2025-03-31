@@ -17,6 +17,23 @@
 @endsection
 
 @section('content')
+<div class="card mt-3">
+    <div class="card-header">
+        <form method="GET" action="{{ route('admin.user') }}">
+            <div class="row">
+                <div class="col-md-2">
+                    <label for="name">Name</label>
+                    <input type="search" name="name" id="name" class="form-control" 
+                           placeholder="Search For Name" value="{{ request()->get('name') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="action">Action</label><br>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <div class="card mt-3">

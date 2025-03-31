@@ -15,6 +15,7 @@ class Plan extends Model
     {
         return $this->hasMany(AddedPlanFeatures::class, 'plan_id', 'id');
     }
+    
     public function orders()
     {
         return $this->hasMany(Order::class, 'plan_id');

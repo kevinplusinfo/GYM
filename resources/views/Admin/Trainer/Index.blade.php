@@ -17,12 +17,29 @@
 @endsection
 
 @section('content')
-<div class="row">
-    <div class="col-md-12">
+<div class="card mt-3">
+    <div class="card-header">
+        <form method="GET" action="{{ route('trainer.index') }}">
+            <div class="row">
+                <div class="col-md-2">
+                    <label for="name">Name</label>
+                    <input type="search" name="name" id="name" class="form-control" 
+                           placeholder="Search For Name" value="{{ request()->get('name') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="action">Action</label><br>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
         <div class="float-right">
             <a href="{{ route('trainer.form') }}" class="btn btn-primary btn-sm">Add Trainer</a>
-        </div><br>
-        <div class="card mt-3">
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card ">
             <div class="row">
                 <div class="col-md-12">
                     <table class="table table-striped">

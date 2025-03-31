@@ -65,13 +65,13 @@
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-warning">
                         <div class="inner">
-                            <h3  class="month"> </h3>
-                            <p>This Week</p>
+                            <h3  class="month">{{$plan}}</h3>
+                            <p>Subscription Plan</p>
                         </div>
                         <div class="icon">
-                            <i class="ion ion-bag"></i>
+                            <i class="fa-solid fa-money-bill nav-icon"></i>
                         </div>
-                        <a href="#"  class="small-box-footer">More info 
+                        <a href="{{route('purchaseplan.index')}}"  class="small-box-footer">More info 
                             <i name="Week" class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
