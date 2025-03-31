@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class HealthPlanExercise extends Model
 {
     use HasFactory;
-    protected $table = 'health_plans_exercise';
+    protected $table = 'health_plans_exercises';
 
     protected $fillable = [
         'user_id',
@@ -17,7 +17,8 @@ class HealthPlanExercise extends Model
         'height',
         'age',
         'activity_level',
-        'dietary_pref',
+        'work',
+        'dailyroutin',
         'plans',
         'is_selected',
     ];
@@ -28,6 +29,7 @@ class HealthPlanExercise extends Model
 
     public function selectedPlans()
     {
-        return $this->hasMany(SelectedPlan::class);
+        return $this->hasMany(SelectedPlan::class, 'health_plan_id', 'id');
     }
+
 }

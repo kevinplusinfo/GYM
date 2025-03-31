@@ -8,19 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class SelectedPlan extends Model
 {
     use HasFactory;
+    protected $table = 'selected_plans';
 
     protected $fillable = [
         'health_plan_id',
-        'type',
-        'plan_data',
+        'plan_no',
+        'ischeck',
     ];
 
-    protected $casts = [
-        'plan_data' => 'array',
-    ];
-
-    public function healthPlan()
+   
+    public function healthPlanExercise()
     {
-        return $this->belongsTo(HealthPlanExercise::class);
+        return $this->belongsTo(HealthPlanExercise::class, 'health_plan_id', 'id');
     }
 }

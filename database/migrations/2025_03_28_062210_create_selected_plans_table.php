@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('selected_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('health_plan_id')->constrained('health_plans')->onDelete('cascade');
-            $table->boolean('type')->default(0);
-            $table->json('plan_data');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Stores which user selected the plan
+            $table->foreignId('health_plan_id')->constrained('health_plans_exercise')->onDelete('cascade'); 
+            $table->integer('plan_no')->nullable(); // Stores plan number
+            $table->boolean('ischeck')->default(0); // Checkbox value (e.g., push notifications)
             $table->timestamps();
         });
     }
+
+
 
     /**
      * Reverse the migrations.

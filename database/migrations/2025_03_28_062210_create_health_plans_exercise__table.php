@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('health_plans_exercise_', function (Blueprint $table) {
+        Schema::create('health_plans_exercises', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('goal');
@@ -19,7 +19,8 @@ return new class extends Migration
             $table->decimal('height', 5, 2);
             $table->integer('age');
             $table->string('activity_level');
-            $table->string('dietary_pref');
+            $table->string('work');
+            $table->string('dailyroutin');
             $table->json('plans');
             $table->boolean('is_selected')->default(0);
             $table->timestamps();
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('health_plans_exercise_');
+        Schema::dropIfExists('health_plans_exercises');
     }
 };

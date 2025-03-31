@@ -20,161 +20,156 @@ class HealthPlanController extends Controller
 
     public function generatePlan(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'goal' => 'required|string',
             'current_weight' => 'required|numeric',
-            'height' => 'required|numeric',
+            'height' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'age' => 'required|numeric',
             'activity_level' => 'required|string',
-            'dietary_pref' => 'required|string',
+            'work' => 'required|string',
+            'dailyroutin' => 'nullable|string',
         ]);
-    
+
         $apiKey = config('services.google_ai.key');
         if (!$apiKey) {
-            return response()->json(['error' => 'API key is missing.'], 500);
+            return back()->withErrors(['error' => 'API key is missing.']);
         }
-    
-        $prompt = "Generate 3 structured diet and workout plans with meal timings for:
-        - Goal: {$request->goal}
-        - Weight: {$request->current_weight} kg
-        - Height: {$request->height} cm
-        - Age: {$request->age}
-        - Activity Level: {$request->activity_level}
-        - Dietary Preference: {$request->dietary_pref}
-    
-        The diet plan should include meals with specific timings: breakfast, lunch, dinner, and snacks.
+
+        $prompt = "Generate three structured weekly workout and diet plans for a user with these details:
+        - **Goal:** {$validatedData['goal']}
+        - **Weight:** {$validatedData['current_weight']} kg
+        - **Height:** {$validatedData['height']} cm
+        - **Age:** {$validatedData['age']}
+        - **Activity Level:** {$validatedData['activity_level']}
+        - **Work Type:** {$validatedData['work']}
+        - **Daily Routine:** {$validatedData['dailyroutin']}
+
+        **Each day's plan must include:**
+        - **Warm-up (5-10 minutes)**
+        - **Main Workout (Strength, Cardio, Endurance based on goal)**
+        - **Cool-down (Stretching/Yoga)**
         
-        Format response as JSON only, no explanations:
+        **Ensure the response is strictly valid JSON (no markdown, no additional text) like this:**
         {
             \"plans\": {
-                \"plan_1\": {
+                \"plan1\": {
                     \"exercise\": {
-                        \"monday\": \"Workout details...\",
-                        \"tuesday\": \"Workout details...\"
+                        \"monday\": {
+                            \"warm_up\": \"5-minute jumping jacks\",
+                            \"primary\": \"30-minute full-body strength training\",
+                            \"cool_down\": \"10-minute stretching\"
+                        },
+                        \"tuesday\": { ... },
+                        ...
                     },
                     \"diet\": {
-                        \"breakfast\": \"Oatmeal with fruits\",
-                        \"lunch\": \"Grilled chicken with veggies\",
-                        \"snacks\": \"Mixed nuts\",
-                        \"dinner\": \"Salmon with quinoa\"
+                        \"monday\": { \"breakfast\": \"Oatmeal with fruit\", \"lunch\": \"Grilled chicken with quinoa\", \"dinner\": \"Salmon with roasted vegetables\" },
+                        \"tuesday\": { ... }
                     }
                 },
-                \"plan_2\": {
-                    \"exercise\": {
-                        \"monday\": \"Workout details...\",
-                        \"tuesday\": \"Workout details...\"
-                    },
-                    \"diet\": {
-                        \"breakfast\": \"Egg whites with avocado\",
-                        \"lunch\": \"Brown rice with tofu\",
-                        \"snacks\": \"Greek yogurt\",
-                        \"dinner\": \"Grilled fish with broccoli\"
-                    }
-                },
-                \"plan_3\": {
-                    \"exercise\": {
-                        \"monday\": \"Workout details...\",
-                        \"tuesday\": \"Workout details...\"
-                    },
-                    \"diet\": {
-                        \"breakfast\": \"Smoothie with spinach and banana\",
-                        \"lunch\": \"Quinoa salad with beans\",
-                        \"snacks\": \"Hummus with carrots\",
-                        \"dinner\": \"Lentil soup with whole wheat bread\"
-                    }
-                }
+                \"plan2\": { \"exercise\": { ... }, \"diet\": { ... } },
+                \"plan3\": { \"exercise\": { ... }, \"diet\": { ... } }
             }
         }";
-    
+
         try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json'
-            ])->withOptions([
-                'verify' => false  
-            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$apiKey", [
-                'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]]
-            ]);
-    
+            $response = Http::withHeaders(['Content-Type' => 'application/json'])
+                ->withOptions(['verify' => false])
+                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$apiKey", [
+                    'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]]
+                ]);
+
             Log::info('AI API Response:', ['body' => $response->body()]);
-    
+
+            if (!$response->successful()) {
+                return back()->withErrors(['error' => 'AI API request failed', 'response' => $response->body()]);
+            }
+
             $aiData = $response->json();
-    
+
             if (!isset($aiData['candidates'][0]['content']['parts'][0]['text'])) {
-                return back()->withErrors([
-                    'error' => 'Invalid response from AI API',
-                    'api_response' => $aiData
-                ]);
+                return back()->withErrors(['error' => 'Invalid AI response', 'api_response' => json_encode($aiData)]);
             }
-    
+
             $plansText = $aiData['candidates'][0]['content']['parts'][0]['text'];
-    
-            // Clean JSON response if wrapped in code block
-            $cleanJson = preg_replace('/^```json\n|\n```$/', '', trim($plansText));
+            $cleanJson = trim(preg_replace('/^```json\n|\n```$/', '', $plansText));
+
             $plans = json_decode($cleanJson, true);
-    
-            if (!$plans || !isset($plans['plans'])) {
-                return back()->withErrors([
-                    'error' => 'Invalid AI-generated response format',
-                    'api_response' => $cleanJson
-                ]);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('JSON Decode Error:', ['error' => json_last_error_msg(), 'response' => $cleanJson]);
+                return back()->withErrors(['error' => 'AI response is not valid JSON', 'api_response' => $cleanJson]);
             }
-    
+
+            if (!isset($plans['plans']['plan1']) || !isset($plans['plans']['plan2']) || !isset($plans['plans']['plan3'])) {
+                Log::error('AI response missing plans:', ['response' => $cleanJson]);
+                return back()->withErrors(['error' => 'AI response does not contain all required plans', 'api_response' => $cleanJson]);
+            }
+
+            $userId = Auth::id();
+            if (!$userId) {
+                return back()->withErrors(['error' => 'User not authenticated']);
+            }
+
             $plan = HealthPlanExercise::create([
-                'user_id' => Auth::id(),
-                'goal' => $request->goal,
-                'current_weight' => $request->current_weight,
-                'height' => $request->height,
-                'age' => $request->age,
-                'activity_level' => $request->activity_level,
-                'dietary_pref' => $request->dietary_pref,
-                'plans' => json_encode($plans['plans']),
+                'user_id' => $userId,
+                'goal' => $validatedData['goal'],
+                'current_weight' => $validatedData['current_weight'],
+                'height' => $validatedData['height'],
+                'age' => $validatedData['age'],
+                'activity_level' => $validatedData['activity_level'],
+                'work' => $validatedData['work'],
+                'dailyroutin' => $validatedData['dailyroutin'],
+                'plans' => json_encode($plans['plans']), 
             ]);
-    
-            return redirect()->route('plans.show', $plan->id)->with('success', 'Three plans generated successfully!');
-    
+
+            return redirect()->route('plans.show', $plan->id)->with('success', 'Three workout plans generated successfully!');
+
         } catch (\Exception $e) {
-            return back()->withErrors([
-                'error' => 'Failed to connect to AI API',
-                'exception' => $e->getMessage()
-            ]);
+            Log::error('API Request Error:', ['error' => $e->getMessage()]);
+            return back()->withErrors(['error' => 'Failed to connect to AI API', 'exception' => $e->getMessage()]);
         }
     }
-    
     
     public function selectPlan(Request $request)
     {
-        $request->validate([
-            'plan_number' => 'required|integer|min:1|max:3',
-            'plan_id' => 'required|integer|exists:health_plan_exercises,id',
-        ]);
-
-        $healthPlan = HealthPlanExercise::findOrFail($request->plan_id);
-        $plans = json_decode($healthPlan->plans, true);
-        $selectedPlanData = $plans["plan_{$request->plan_number}"];
-
-        SelectedPlan::create([
-            'health_plan_id' => $healthPlan->id,
-            'type' => 1,
-            'plan_data' => json_encode($selectedPlanData['exercise']),
-        ]);
-
-        SelectedPlan::create([
-            'health_plan_id' => $healthPlan->id,
-            'type' => 2, 
-            'plan_data' => json_encode($selectedPlanData['diet']),
-        ]);
-
-        $healthPlan->update(['is_selected' => 1]);
-        return redirect()->route('show.selected.plan')->with('success', "You have selected Plan {$request->plan_number}.");
+    
+        $selectedPlan = new SelectedPlan();
+        $selectedPlan->user_id = Auth::id();
+        $selectedPlan->health_plan_id = $request->plan_id;
+        $selectedPlan->plan_no = $request->plan_no;
+        $selectedPlan->ischeck = $request->has('ischeck') ? 1 : 0;
+        $selectedPlan->save();
+    
+        return redirect()->route('show.selected.plan')->with('success', "You have successfully selected Plan {$request->plan_no}.");
     }
-
+    
     public function show($id)
     {
         $plan = HealthPlanExercise::findOrFail($id);
+        $plans = json_decode($plan->plans, true);
 
-        $plan->plans = json_decode($plan->plans, true);
-
-            return view('Customer.Health.show-plans', compact('plan'));
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::error('JSON Decode Error:', ['error' => json_last_error_msg()]);
+            return back()->withErrors(['error' => 'Failed to load health plan.']);
         }
+
+        return view('Customer.Health.show-plans', compact('plan', 'plans'));
+    }
+
+    public function showSelectedPlans()
+{
+    $selectedPlans = SelectedPlan::where('user_id', Auth::id())->get()->map(function ($plan) {
+        $healthPlan = HealthPlanExercise::find($plan->health_plan_id);
+        $plans = $healthPlan ? json_decode($healthPlan->plans, true) : [];
+
+        return [
+            'plan_no' => $plan->plan_no,
+            'exercise' => $plans[$plan->plan_no]['exercise'] ?? [],
+            'diet' => $plans[$plan->plan_no]['diet'] ?? [],
+        ];
+    });
+    // dd($selectedPlans);
+        return view('Customer.Health.selected-plans', compact('selectedPlans'));
+    }
     
 }

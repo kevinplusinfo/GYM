@@ -213,11 +213,11 @@ use App\Http\Controllers\Customer\HealthPlanController;
         });
 
         Route::prefix('health')->group(function(){
-            Route::get('/health', [HealthPlanController::class, 'index'])->name('health.form');
+            Route::get('/form', [HealthPlanController::class, 'index'])->name('health.form');
             Route::post('/generate-health-plan', [HealthPlanController::class, 'generatePlan'])->name('generate.health.plan');
             Route::post('/select-health-plan', [HealthPlanController::class, 'selectPlan'])->name('select.health.plan');
             Route::get('/plans/{id}', [HealthPlanController::class, 'show'])->name('plans.show');
-
+            Route::get('/selected-plans', [HealthPlanController::class, 'showSelectedPlans'])->name('show.selected.plan');
             
         });
 
