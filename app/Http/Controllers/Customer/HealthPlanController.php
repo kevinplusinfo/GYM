@@ -23,9 +23,9 @@ class HealthPlanController extends Controller
         $customer = Auth::user();
         $existingOrder = HealthPlanExercise::where('user_id', $customer->id)
         ->first();
-    if ($existingOrder) {
-        return redirect()->route('health.form')->with('error', 'You have already Created this Diet & Workout Plan.');
-    }
+        if ($existingOrder) {
+            return redirect()->route('health.form')->with('error', 'You have already Created this Diet & Workout Plan.');
+        }
         $validatedData = $request->validate([
             'goal' => 'required|string',
             'current_weight' => 'required|numeric',

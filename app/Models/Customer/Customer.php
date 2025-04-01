@@ -19,4 +19,14 @@ class Customer extends Authenticatable
     {
         return $this->hasMany(Feedback::class, 'user_id', 'id');
     }
+    public function fcmTokens()
+    {
+        return $this->hasMany(FcmToken::class);
+    }
+    
+    public function selectedPlans()
+    {
+        return $this->hasMany(SelectedPlan::class);
+    }
+
 }
