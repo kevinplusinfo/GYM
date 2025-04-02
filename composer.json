@@ -12,7 +12,7 @@
         "kreait/laravel-firebase": "*",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
-        "razorpay/razorpay": "^2.9",
+        "razorpay/razorpay": "*",
         "spatie/image": "^3.7",
         "twilio/sdk": "^8.4"
     },

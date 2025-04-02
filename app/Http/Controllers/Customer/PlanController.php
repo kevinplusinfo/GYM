@@ -49,11 +49,12 @@ class PlanController extends Controller
             'email' => 'required|email',
             'plan_id' => 'required|exists:plans,id',
         ]);
-        // dd($request->all());
+       
         $customer = Auth::user();
         $plan = Plan::findOrFail($request->plan_id);
         
-        $api = new Api("rzp_test_1SyJYrrBD6M4bC", "VMUvENLFzaCTOUnniS8nxRD3");
+        $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+
 
         $order = $api->order->create([
             'receipt' => 'ORDER_' . uniqid(),
@@ -85,7 +86,7 @@ class PlanController extends Controller
     }
     public function verifyPayment(Request $request)
     {
-        $api = new Api("rzp_test_1SyJYrrBD6M4bC", "VMUvENLFzaCTOUnniS8nxRD3");
+        $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
 
         try {
             $attributes = [
