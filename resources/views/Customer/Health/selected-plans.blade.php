@@ -3,12 +3,11 @@
 @section('title', 'Health Plans')
 @section('styles')
     <style>
-        /* Neon Glow Button Style */
         .custom-tab-btn {
-            background-color: #222; /* Dark background */
+            background-color: #222; 
             color: #fff !important;
-            border: 2px solid #ff4d00; /* Orange border */
-            border-radius: 50px; /* Rounded button */
+            border: 2px solid #ff4d00; 
+            border-radius: 50px; 
             padding: 12px 20px;
             margin: 5px;
             font-size: 16px;
