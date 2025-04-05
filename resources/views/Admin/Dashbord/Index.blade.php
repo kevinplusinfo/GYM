@@ -77,17 +77,21 @@
                     </div>
                 </div>
 
+                @php
+                    $today = \Carbon\Carbon::today()->format('Y-m-d');
+                @endphp
+
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-danger">
                         <div class="inner">
-                            <h3> </h3>
-                            <p>Today</p>
+                            <h3>{{ $todayOrders }}</h3>
+                            <p>Today Order</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-pie-graph"></i>
                         </div>
-                        <a href="#" class="small-box-footer">More info
-                            <i name="Today" class="fas fa-arrow-circle-right"></i>
+                        <a href="{{ route('ecom.orders', ['created_at' => $today]) }}" class="small-box-footer">
+                            More info <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>

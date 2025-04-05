@@ -220,19 +220,43 @@ class EcomController extends Controller
         return response()->json(['success' => false, 'message' => 'Image not found'], 404);
     }
 
-    public function orders()
+    public function orders(Request $request)
     {
         $orders = Product_Order::with([
             'orderItems', 
             'orderItems.product', 
             'orderItems.productFlavor.flavor',
-            'orderItems.productFlavorSize' 
-        
-        ])->get();
-
+            'orderItems.productFlavorSize'
+        ])->whereHas('orderItems', function ($query) use ($request) {
+    
+            if ($request->filled('name')) {
+                $query->whereHas('product', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->name . '%');
+                });
+            }
+    
+            if ($request->filled('min_price')) {
+                $query->whereHas('productFlavorSize', function ($q) use ($request) {
+                    $q->where('price', '>=', $request->min_price);
+                });
+            }
+    
+            if ($request->filled('max_price')) {
+                $query->whereHas('productFlavorSize', function ($q) use ($request) {
+                    $q->where('price', '<=', $request->max_price);
+                });
+            }
+    
+        });
+    
+        if ($request->filled('created_at')) {
+            $orders->whereDate('created_at', $request->created_at);
+        }
+    
+        $orders = $orders->get();
+    
         return view('Admin.Ecom.orders', compact('orders'));
     }
-
     public function getOrderDetails(Request $request)
     {
        

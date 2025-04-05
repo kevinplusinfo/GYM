@@ -25,6 +25,7 @@
 @endsection
 
 @section('content-header')
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -44,9 +45,41 @@
 @endsection
 
 @section('content')
+<div class="card mt-3">
+    <div class="card-header">
+        <form method="GET" action="{{ route('ecom.orders') }}">
+            <div class="row">
+                <div class="col-md-2">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" id="name" class="form-control" 
+                           placeholder="Search for Name" value="{{ request()->get('name') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="min_price">Min Price</label>
+                    <input type="number" name="min_price" id="min_price" class="form-control" 
+                           placeholder="Min Price" value="{{ request()->get('min_price') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="max_price">Max Price</label>
+                    <input type="number" name="max_price" id="max_price" class="form-control" 
+                           placeholder="Max Price" value="{{ request()->get('max_price') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="created_at">Date</label>
+                    <input type="date" name="created_at" id="created_at" class="form-control" 
+                           value="{{ request()->get('created_at') }}">
+                </div>
+                <div class="col-md-1">
+                    <label>Action</label>
+                    <button type="submit" class="btn btn-primary form-control btn-sm">Search</button>
+                </div>
+            </div>
+        </form> 
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
-        <div class="card mt-3">
+        <div class="card ">
             <div class="card-header">
                 <h3 class="card-title">Product & Customer Information</h3>
             </div>

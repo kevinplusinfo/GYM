@@ -9,6 +9,7 @@ use App\Models\Customer\Customer;
 use App\Models\Customer\Product_order;
 use App\Models\Customer\ProductCart;
 use App\Models\Customer\Order;
+use Carbon\Carbon;
 
 
 
@@ -22,8 +23,9 @@ class DashbordController extends Controller
         $cart_qty = ProductCart::sum('qty');
         $user = Customer::count();
         $plan = Order::count();
+        $todayOrders = Order::whereDate('created_at', Carbon::today())->count();
 
-        return view('Admin.Dashbord.Index',compact('trainer','order','cart_qty','user','plan'));
+        return view('Admin.Dashbord.Index',compact('trainer','order','cart_qty','user','plan','todayOrders'));
     }
 
 }
