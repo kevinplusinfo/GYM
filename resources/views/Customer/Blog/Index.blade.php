@@ -1,5 +1,5 @@
 @extends('Customer.layout.main')
-@section('title')Gallery @endsection
+@section('title')Blogs @endsection
 @section('styles')
 <link href="{{ asset('assets/plugins/daterange-picker/css/daterangepicker-bs3.css') }}" rel="stylesheet">
 <style>
