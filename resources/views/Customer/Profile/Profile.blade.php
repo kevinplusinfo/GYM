@@ -57,6 +57,12 @@
                                 <a href="{{ route('show.selected.plan') }}" class="btn btn-warning ml-3">
                                     Current Diet & Workout Plan
                                 </a>
+                                @if(!is_null($product_orderIds))
+                                    <a href="{{ route('purchase.product', ['order_id' => $product_orderIds]) }}" class="btn btn-warning ml-3">
+                                        Place Order
+                                    </a>
+                                @endif
+                                
                             </div>
                             
                         </div>

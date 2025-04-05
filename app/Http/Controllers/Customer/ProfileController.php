@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Customer;
 use App\Models\Customer\Order;
+use App\Models\Customer\Product_Order;
+
 
 
 class ProfileController extends Controller
@@ -17,7 +19,10 @@ class ProfileController extends Controller
         $order = Order::select('id')
                         ->where('customer_id', Auth::id())
                         ->first();
-        return view('Customer.Profile.Profile', compact('order'));
+        $product_orderIds = Product_Order::where('customer_id', Auth::id())->pluck('id')->first();
+
+        // dd($product_orderIds);                   
+        return view('Customer.Profile.Profile', compact('order','product_orderIds'));
     }
 
     public function update(Request $request)

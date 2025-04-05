@@ -35,13 +35,19 @@ return [
         ],
     ],
     'razorpay' => [
-        'key' => 'rzp_test_V8dTVLLCGqG1nv',
-        'secret' => 'OxMzmumc2RBEwMkPqnU32I7m', 
+        'key' => env('RAZORPAY_KEY_ID'),
+        'secret' => env('RAZORPAY_KEY_SECRET'), 
     ],
     
     'google_ai' => [
         'key' => env('GOOGLE_AI_API_KEY'),
     ],
+
+    'fcm' => [
+        'server_key' => env('FCM_SERVER_KEY'),
+    ],
+
+    
 
 
 ];

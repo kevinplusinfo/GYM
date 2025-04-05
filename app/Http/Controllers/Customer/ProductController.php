@@ -150,7 +150,7 @@ class ProductController extends Controller
             $totalAmount += $item->productFlavorSize->price  * $item->qty;
         }
         // dd($totalAmount);
-        $api = new Api("rzp_test_V8dTVLLCGqG1nv", "OxMzmumc2RBEwMkPqnU32I7m");
+        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
         $order = $api->order->create([
             'receipt' => 'ORDER_' . uniqid(),
             'amount' => $totalAmount * 100, 
@@ -199,7 +199,7 @@ class ProductController extends Controller
         ]);
     }
     public function paymentverify(Request $request){
-        $api = new Api("rzp_test_V8dTVLLCGqG1nv", "OxMzmumc2RBEwMkPqnU32I7m");
+        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
         try {
             $attributes = [

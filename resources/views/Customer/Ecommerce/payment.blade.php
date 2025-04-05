@@ -20,7 +20,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             var options = {
-                "key": "{{ $key }}",
+                "key": "{{config('services.razorpay.key')}}",
                 "amount": "{{ $amount }}", 
                 "currency": "INR",
                 "name": "KVN'S GYM",

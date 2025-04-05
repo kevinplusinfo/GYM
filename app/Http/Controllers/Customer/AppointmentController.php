@@ -12,8 +12,16 @@ class AppointmentController extends Controller
     public function Appointment(){
         return view('Customer.Appointment.Appointment');
     }
-    public function store(Request $request){
-        // dd($request->all());
+    public function store(Request $request)
+    {
+        $request->validate([
+            
+            'appointment_date' => 'required|date|after_or_equal:today',
+          
+        ], [
+            'appointment_date.after_or_equal' => 'The appointment date must be today or a future date.',
+        ]);
+
         Appointment::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -21,9 +29,10 @@ class AppointmentController extends Controller
             'class' => $request->session_type,
             'appointment_date' => $request->appointment_date,  
             'appointment_time' => $request->appointment_time,
-            'remark' => $request->remark ?? null,
+            'remark' => $request->remark,
         ]);
-        
-        return redirect()->back()->with('alert_success', 'Your appointment has been booked!');
+
+        return redirect()->back()->with('success', 'Your appointment has been booked!');
     }
+
 }

@@ -53,8 +53,7 @@ class PlanController extends Controller
         $customer = Auth::user();
         $plan = Plan::findOrFail($request->plan_id);
         
-        $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
-
+        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
         $order = $api->order->create([
             'receipt' => 'ORDER_' . uniqid(),
@@ -62,6 +61,8 @@ class PlanController extends Controller
             'currency' => 'INR',
             'payment_capture' => 1
         ]);
+
+        // dd($order);
 
         // dd($order);
 
@@ -86,7 +87,7 @@ class PlanController extends Controller
     }
     public function verifyPayment(Request $request)
     {
-        $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+        $api = new Api("rzp_test_JW3uy33wnBqYDE", "FFr8CK5e3RGd9FdzZmnTlE8f");
 
         try {
             $attributes = [
@@ -116,7 +117,22 @@ class PlanController extends Controller
         if (!$order) {
             return redirect()->route('customer.plans.index')->with('error', 'Order not found!');
         }
-        return view('Customer.Plans.Order', compact('order'));
+
+        $orderedPlanId = $order->plan_id;
+
+        $plans = Plan::all();
+
+        $planFeatures = AddedPlanFeatures::with('feature')
+            ->get()
+            ->groupBy('plan_id')
+            ->map(function ($features) {
+                return $features->map(function ($addedFeature) {
+                    return $addedFeature->feature;
+                });
+            });
+            $orderedPlanFeatures = $planFeatures[$orderedPlanId] ?? collect();
+
+        return view('Customer.Plans.Order', compact('plans', 'orderedPlanFeatures', 'order'));
     }
 
 

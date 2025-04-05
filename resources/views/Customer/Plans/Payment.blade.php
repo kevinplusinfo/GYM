@@ -17,7 +17,7 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     var options = {
-        "key": "{{ $key }}",
+        "key": "{{config('services.razorpay.key')}}",
         "amount": "{{ $amount }}", 
         "currency": "INR",
         "name": "KVN'S GYM",

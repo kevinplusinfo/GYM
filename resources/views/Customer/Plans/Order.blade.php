@@ -123,8 +123,8 @@
 
                             <h3>Plan Features</h3>
                             <ul class="plan-features">
-                                @foreach($order->plan->feature as $feature)
-                                    <li>✔ {{ $feature->name }}</li>
+                                @foreach($orderedPlanFeatures as $feature)
+                                    <li>{{ $feature->name }}</li>
                                 @endforeach
                             </ul>
                         </div>

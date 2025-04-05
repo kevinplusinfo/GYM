@@ -13,11 +13,29 @@
 @endsection
 
 @section('content')
+
 <section class="classes-section spad">
     <div class="col-lg-8 text-center" style="margin-left:16%">
         <div class="leave-comment mt-5," style="margin-top:100px;">
             <h2 style="color:white" class="mt-5">Book Your Gym Appointment</h2>
             <p class="mt-2" style="margin-bottom: 50px;color:#f36100">Fill in the details below to schedule your session.</p>
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li style="color: red;">{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Success!</strong> {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
             <form action="{{route('appointment.store')}}" method="POST">
                 @csrf
                 <input type="text" name="name" placeholder="Full Name" required class="form-control" style="background-color: #151515;color:white">
@@ -28,6 +46,9 @@
                     <option value="personal_training">Personal Training</option>
                     <option value="group_class">Group Class</option>
                     <option value="yoga">Yoga</option>
+                    <option value="yoga">Body Building</option>
+                    <option value="yoga">Zumba</option>
+                    <option value="yoga">Weight Lose</option>
                 </select><br>
                 
                 <input type="date" name="appointment_date" class="form-control" required style="background-color: #151515;color:white">
