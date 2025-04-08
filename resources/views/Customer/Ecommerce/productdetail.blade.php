@@ -279,7 +279,8 @@
                 error: function(xhr) {
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         alert(xhr.responseJSON.message); 
-                    } else {
+                    } 
+                    else {
                         alert("Something went wrong.");
                     }
                 }

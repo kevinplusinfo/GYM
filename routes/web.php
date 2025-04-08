@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\AdminFlavorController;
 use App\Http\Controllers\Admin\AdminFeedbackController;
 use App\Http\Controllers\Admin\AdminAppointmentController;
 use App\Http\Controllers\Admin\PurchasePlanController;
+use App\Http\Controllers\Admin\ContactUsController;
+
 
 
 #customer
@@ -158,6 +160,12 @@ use App\Http\Controllers\Customer\HealthPlanController;
 
             Route::prefix('purchaseplan')->group(function(){
                 Route::get('/', [PurchasePlanController::class, 'index'])->name('purchaseplan.index');
+            });
+
+            Route::prefix('contact')->group(function(){
+                Route::get('/', [ContactUsController::class, 'index'])->name('admin.contact');
+                Route::delete('/delete/{id}', [ContactUsController::class, 'delete'])->name('contact.destroy');
+
             });
         });
     });

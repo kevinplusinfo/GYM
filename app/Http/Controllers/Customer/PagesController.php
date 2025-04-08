@@ -25,7 +25,7 @@ class PagesController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:contact_as,email|max:255',
             'website' => 'nullable|string|max:255',
-            'comment' => 'nullable|string',
+            'comment' => 'required|string',
         ]);
     
         Contact::create($validated);

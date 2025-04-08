@@ -179,6 +179,14 @@
 					</a>
 				</li>
 				<li class="nav-item">
+					<a href="{{route('admin.contact')}}" class="nav-link  Contact-link">
+						<i class="nav-icon fas fa-envelope"></i>
+						<p>
+							Contact Us
+						</p>
+					</a>
+				</li>
+				<li class="nav-item">
 					<a href="{{route('setting')}}" class="nav-link  setting-link">
 						<i class="fa-solid fa-gear nav-icon "></i> 
 						<p>
