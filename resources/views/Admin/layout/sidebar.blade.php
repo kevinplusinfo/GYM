@@ -179,7 +179,7 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="{{route('admin.contact')}}" class="nav-link  Contact-link">
+					<a href="{{route('admin.contact')}}" class="nav-link  contact-link">
 						<i class="nav-icon fas fa-envelope"></i>
 						<p>
 							Contact Us
