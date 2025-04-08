@@ -40,15 +40,45 @@ class ProductController extends Controller
 
     public function store(Request $request, $id = null)
     {
-        
+        // 1. Get the stock data
+        $stockcheck = ProductFlavorSize::where('id', $request->productflavorsize_id)->first();
+    
+        // 2. Check if product flavor size exists
+        if (!$stockcheck) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid product flavor or size.'
+            ], 400);
+        }
+    
+        $availableQty = (int) $stockcheck->qty;
+        $requestedQty = (int) $request->qty;
+    
+        // 3. Check if out of stock
+        if ($availableQty === 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This flavor size is out of stock.'
+            ], 400);
+        }
+    
+        // 4. Check if requested quantity exceeds available quantity
+        if ($requestedQty > $availableQty) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please select product in available quantity.'
+            ], 400);
+        }
+    
+        // 5. Add to or update cart
         $cartItem = ProductCart::where('customer_id', $request->customer_id)
-        ->where('product_id', $request->product_id)
-        ->where('productflavor_id', $request->productflavor_id)
-        ->where('productflavorsize_id', $request->productflavorsize_id)
-        ->first();
-
+            ->where('product_id', $request->product_id)
+            ->where('productflavor_id', $request->productflavor_id)
+            ->where('productflavorsize_id', $request->productflavorsize_id)
+            ->first();
+    
         if ($cartItem) {
-            $cartItem->qty = $request->qty; 
+            $cartItem->qty = $requestedQty;
             $cartItem->save();
         } else {
             $cartItem = ProductCart::create([
@@ -56,20 +86,26 @@ class ProductController extends Controller
                 'product_id' => $request->product_id,
                 'productflavor_id' => $request->productflavor_id,
                 'productflavorsize_id' => $request->productflavorsize_id,
-                'qty' => $request->qty
+                'qty' => $requestedQty
             ]);
         }
+    
+        // 6. If Buy Now, redirect to checkout
         if ($request->buy_now) {
             return response()->json([
+                'status' => 'success',
                 'redirect_url' => route('cart.checkout')
             ]);
         }
-
+    
+        // 7. Default response for normal add to cart
         return response()->json([
+            'status' => 'success',
             'message' => 'Cart updated successfully!',
             'qty' => $cartItem->qty
         ]);
     }
+    
     
     public function cartdetail()
     {

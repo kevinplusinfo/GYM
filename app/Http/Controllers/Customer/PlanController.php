@@ -87,7 +87,7 @@ class PlanController extends Controller
     }
     public function verifyPayment(Request $request)
     {
-        $api = new Api("rzp_test_JW3uy33wnBqYDE", "FFr8CK5e3RGd9FdzZmnTlE8f");
+        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
         try {
             $attributes = [

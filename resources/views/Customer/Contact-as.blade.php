@@ -66,13 +66,18 @@
                     </div>
                     <div class="map">
                         <iframe
-                            src="https://www.google.com/maps/dir//Shop+No+-+1+to+5,+Purshottam+villa,+Ramkatha+Rd,+near+Swaminarayan+Gurukul,+Katargam,+Surat,+Gujarat+395004/@21.2443716,72.7534008,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3be04f59c0a62175:0xea7eec5cd1c3a485!2m2!1d72.8234412!2d21.2443861?entry=ttu"
-                            height="550" style="border:0;" allowfullscreen="">
+                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3719.6288378626466!2d72.8212518751951!3d21.244382981654036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04f59c0a62175%3A0xea7eec5cd1c3a485!2sShop%20No%20-%201%20to%205%2C%20Purshottam%20villa%2C%20Ramkatha%20Rd%2C%20near%20Swaminarayan%20Gurukul%2C%20Katargam%2C%20Surat%2C%20Gujarat%20395004!5e0!3m2!1sen!2sin!4v1712579700000!5m2!1sen!2sin"
+                          width="100%"
+                          height="550"
+                          style="border:0;"
+                          allowfullscreen=""
+                          loading="lazy"
+                          referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
-                    </div>
+                      </div>
                 </div>
             </section>
-            <!-- Contact Section End -->
+              <!-- Contact Section End -->
         
             <!-- Get In Touch Section Begin -->
             <div class="gettouch-section">

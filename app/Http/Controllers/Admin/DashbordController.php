@@ -23,7 +23,7 @@ class DashbordController extends Controller
         $cart_qty = ProductCart::sum('qty');
         $user = Customer::count();
         $plan = Order::count();
-        $todayOrders = Order::whereDate('created_at', Carbon::today())->count();
+        $todayOrders = Product_order::whereDate('created_at', Carbon::today())->count();
 
         return view('Admin.Dashbord.Index',compact('trainer','order','cart_qty','user','plan','todayOrders'));
     }

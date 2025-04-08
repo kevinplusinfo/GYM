@@ -117,7 +117,7 @@
                 </div>
                 
                 <div class="col-md-6" style="background-color: black">
-                    <h2 style="color: white;" class="mb-3 mt-2">{{ $product->title }}</h2>
+                    <h4 style="color: white;" class="mb-3 mt-2">{{ $product->title }}</h4>
                     {{-- <p>{!! $product->description !!}</p> --}}
                     <h4 class="mb-2">
                         <span class="text-muted" style="text-decoration: line-through;">
@@ -277,10 +277,13 @@
 
                 },
                 error: function(xhr) {
-                    alert("Failed to add product to cart. Please try again.");
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        alert(xhr.responseJSON.message); 
+                    } else {
+                        alert("Something went wrong.");
+                    }
                 }
             });
         });
-
     </script>
 @endsection
